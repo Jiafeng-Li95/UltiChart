@@ -1,13 +1,14 @@
 import React from 'react';
-import Form from 'react-bootstrap/Form'
+import { Form, FormControl, Button } from "react-bootstrap";
 import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Card from 'react-bootstrap/Card'
 import CardDeck from 'react-bootstrap/CardDeck'
+import Dropdown from 'react-bootstrap/Dropdown'
+
 import './App.css';
 
 const popover = (
@@ -37,6 +38,60 @@ const ManageRequests = () => (
   </OverlayTrigger>
 );
 
+const namesList = [
+  {
+    id: 1,
+    value: 'John Doe'
+  }, {
+    id: 2,
+    value: 'John Smith'
+  }, {
+    id: 3,
+    value: 'Jane Marie'
+  }, {
+    id: 4,
+    value: 'Jane Thomas'
+  }
+];
+
+// generage select dropdown option list dynamically
+function Options({ options }) {
+  return (
+    options.map(option =>
+      <Dropdown.Item eventKey={option.id}>{option.value}</Dropdown.Item>)
+  );
+}
+
+// forwardRef again here!
+// Dropdown needs access to the DOM of the Menu to measure it
+const CustomMenu = React.forwardRef(
+  ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+    const [value, setValue] = React.useState('');
+
+    return (
+      <div
+        ref={ref}
+        style={style}
+        className={className}
+        aria-labelledby={labeledBy}
+      >
+        <FormControl
+          autoFocus
+          className="mx-3 my-2 w-auto"
+          placeholder="Type to filter..."
+          onChange={(e) => setValue(e.target.value)}
+          value={value}
+        />
+        <ul className="list-unstyled">
+          {React.Children.toArray(children).filter(
+            (child) =>
+              !value || child.props.children.toLowerCase().startsWith(value),
+          )}
+        </ul>
+      </div>
+    );
+  },
+);
 
 function Requests() {
   return (
@@ -52,29 +107,37 @@ function Requests() {
             <div>
               <NewRequest />
               <br></br>
+              Select an Employee
+              <Dropdown>
+                <Dropdown.Toggle style={{ width: '19rem' }} variant="secondary" id="dropdown-custom-components">
+                  Select an Employee
+                </Dropdown.Toggle>
+                <Dropdown.Menu as={CustomMenu}>
+                  <Options options={namesList} />
+                </Dropdown.Menu>
+              </Dropdown>
+              <br></br>
               <Form>
-                <Form.Label>Employee Name</Form.Label>
+                <Form.Label>Or Enter Employee Name</Form.Label>
                 <Row>
                   <Col>
-                    <Form.Control placeholder="Employee First name" />
+                    <Form.Control placeholder="First name" />
                   </Col>
                   <Col>
-                    <Form.Control placeholder="Employee Last name" />
+                    <Form.Control placeholder="Last name" />
                   </Col>
                 </Row>
               </Form>
+              <br></br>
               <Form>
                 <br></br>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control type="email" placeholder="name@example.com" />
-                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlTextarea1">
                   <Form.Label>Place any comments for this employees current manager here</Form.Label>
                   <Form.Control as="textarea" rows="3" placeholder="additional comments" />
                 </Form.Group>
               </Form>
             </div>
+            <br></br>
             <Button variant="outline-secondary" size="lg" block>
               Submit
             </Button>
