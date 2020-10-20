@@ -1,13 +1,14 @@
 import React from 'react';
 import { Col, Form, Button } from 'react-bootstrap';
 import './App.css';
-import Chart from './components/chart';
-//import TreeExample from './ChartComponent/TreeExample'
+import OrgChart from './components/OrgChart';
 
 class Home extends React.Component {
+  
   handleOnClick() {
     alert();
   }
+
   render() {
     return (
       <div className="home">
@@ -21,50 +22,7 @@ class Home extends React.Component {
             </Form.Row>
           </Form>
         </div>
-        <div>
-          {/* data input here use the example like this:
-              data = {[
-                "firstName" : "Adrienne",
-                "lastName" : "Hawkins",
-                "companyId" : 3,
-                "password" : "hawkinsad",
-                "positionTitle" : "CEO",
-                "companyName" : "Nightwell Enterprise",
-                "isManager" : true,
-                "employeeId" : 1,
-                "managerId" : null,
-                "email" : "Adrienne_Hawkins@nightwellenterprise.com",
-                "startDate" : "1995-11-06"
-              ]}
-          */}
-          <Chart data = {[
-            {
-              "firstName" : "Adrienne",
-              "lastName" : "Hawkins",
-              "companyId" : 3,
-              "password" : "hawkinsad",
-              "positionTitle" : "CEO",
-              "companyName" : "Nightwell Enterprise",
-              "isManager" : true,
-              "employeeId" : 1,
-              "managerId" : null,
-              "email" : "Adrienne_Hawkins@nightwellenterprise.com",
-              "startDate" : "1995-11-06"
-            }, {
-              "firstName" : "Bernadine",
-              "lastName" : "Richard",
-              "companyId" : 3,
-              "password" : "richardbe",
-              "positionTitle" : "Engineering Manager",
-              "companyName" : "Nightwell Enterprise",
-              "isManager" : true,
-              "employeeId" : 2,
-              "managerId" : 1,
-              "email" : "Bernadine_Richard@nightwellenterprise.com",
-              "startDate" : "2016-07-22"
-            }
-          ]}/> 
-        </div>
+        <OrgChart/>
       </div>
     );
   }
