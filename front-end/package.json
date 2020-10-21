@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "proxy":"http://localhost",
   "dependencies": {
     "@balkangraph/orgchart.js": "^7.5.33",
     "@fortawesome/fontawesome-free": "^5.15.1",
