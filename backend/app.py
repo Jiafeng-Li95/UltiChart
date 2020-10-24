@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 import pymongo
 from pymongo import MongoClient
 import json
@@ -72,3 +73,37 @@ def get_json_employees():
         flash('data is not in json format')
         # Return error 400.
         return render_template('error.html'), 400
+
+
+#login
+
+jwt = JWTManager(app)
+
+# configuring JWT
+app.config["JWT_SECRET_KEY"] = "this-is-secret-key"
+
+#route that leads you to the org chart page once you are logged in
+#unable to reach this route until you are successfully logged in
+@app.route("/dashboard")
+@jwt_required
+def dasboard():
+    return jsonify(message="Welcome! to the Ultimate Software Employee Organization Chart!")
+
+@app.route("/login", methods=["POST"])
+def login():
+    if request.is_json:
+        email = request.json["email"]
+        password = request.json["password"]
+    else:
+        email = request.form["email"]
+        password = request.form["password"]
+
+    test = collection.find_one({"email": email,"password":password})
+    if test:
+        access_token = create_access_token(identity=email)
+        return jsonify(message="Login Succeeded!", access_token=access_token), 201
+    else:
+        return jsonify(message="Bad Email or Password"), 401
+
+if __name__ == '__main__':
+    app.run(debug=True)
