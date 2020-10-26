@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, sessions
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 import pymongo
 from pymongo import MongoClient
@@ -107,3 +107,49 @@ def login():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# Add json data via Postman to the requests. 
+@app.route("/sendManagerRequest", methods=["POST"])
+def send_manager_request():
+    rcollection = db["Requests"]
+    requests = list(rcollection.find({}))
+    if request.is_json:
+        # Get the data that is being added.
+        employees = request.get_json()
+        # Append the json data to the database.
+        requests.append(employees)
+        # Inserts to the database.
+        rcollection.insert_one(employees);
+        return {'id': len(requests)}, 200
+    # The user did not enter json format.
+    else:
+        # The frontend will be notified of the error.
+        flash('data is not in json format')
+        # Return error 400.
+        return render_template('error.html'), 400
+# Find a request given to the logged in user.
+@app.route("/viewManagerRequest", methods=["GET"])
+@jwt_required
+def view_manager_request():
+    rcollection = db["Requests"]
+
+    userID = None
+    for u in collection['email']:
+        if get_jwt_identity() == u['email']:
+            userID = u['employeeId']
+            break
+
+    if not userID:
+        return
+    
+    request = db.requests.find_one({'newManager': userID})
+    employee = None
+    for e in collection['employeeId']:
+        if request['employeeId'] == e['employeeId']:
+            employee = e
+            break
+    if not employee:
+        return
+
+    return employee
+    pass
