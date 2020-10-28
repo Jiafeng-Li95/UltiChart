@@ -9,7 +9,6 @@ class LoginForm extends React.Component{
         this.state = {
             email: "",
             password: "",
-            token: "",
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,7 +30,7 @@ class LoginForm extends React.Component{
         })
         .then(function(response){
             alert(response.data.message)
-            this.setState({token: response.data.access_token});
+            localStorage.setItem("atoken", response.data.access_token)
         })
         .catch(function(error){
             alert(error);
