@@ -20,12 +20,30 @@ def get_all_employees():
     all_employees = list(collection.find({}))
     return json.dumps(all_employees, default=json_util.default)
 
-@app.route("/details", methods=["GET"])
-def get_employees():
+@app.route("/details/<email>", methods=["GET"])
+def get_employees(email):
     """Find employee object with given email and retrieve empID. Get all employees where managerId == empId.
     Returns empId and direct reports of employee we are looking at.
+    Args: email of employee
     Note: Direct reports are defined as an employee who has the current empId as managerId.
     """
+
+    direct_reports = []
+    current_emp = collection.find_one({"email": email})
+    all_employees = collection.find({"managerId": current_emp["employeeId"]})
+
+    for employee in all_employees:
+        direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+    
+    return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports})
+
+""" Alternate input data using JSON for details
+@app.route("/details", methods=["GET"])
+def get_employees():
+    Find employee object with given email and retrieve empID. Get all employees where managerId == empId.
+    Returns empId and direct reports of employee we are looking at.
+    Note: Direct reports are defined as an employee who has the current empId as managerId.
+
     if request.is_json:
         direct_reports = []
         email_address = request.get_json()
@@ -40,7 +58,7 @@ def get_employees():
         # The frontend will be notified of the error.
         flash('data is not in json format')
         # Return error 400.
-        return render_template('error.html'), 400
+        return render_template('error.html'), 400"""
 
 # Get the data from the Mongo Server.
 
