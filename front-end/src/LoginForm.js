@@ -29,19 +29,20 @@ class LoginForm extends React.Component{
             password: this.state.password
         })
         .then(function(response){
-            alert(response.data.message)
             localStorage.setItem("atoken", response.data.access_token)
+            window.location.replace("/");
         })
         .catch(function(error){
-            alert(error);
+            alert("Incorrect email or password.")
         })
         event.preventDefault();
     }
 
 render(){
+
     return (
         <div align = "center">
-            <Form className="mx-5 p-3 login-form" style={{border:"1px solid #C0C0C0"}} onSubmit = {this.handleSubmit}>
+            <Form className="mx-5 p-3 login-form" style={{border:"1px solid #C0C0C0"}} >
                 <Form.Group align = "left" controlId="formID">
                     <Form.Label>Email</Form.Label>
                     <Form.Control name = "email" type="text" placeholder="Enter email" value={this.state.email} onChange = {this.handleChange}></Form.Control>
@@ -50,7 +51,7 @@ render(){
                     <Form.Label>Password</Form.Label>
                     <Form.Control name = "password" type="password" placeholder="Enter password" value = {this.state.password} onChange = {this.handleChange}></Form.Control>
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" onClick = {this.handleSubmit}>
                     Submit
                 </Button>
 

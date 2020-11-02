@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.21.0",
     "bootstrap": "^4.5.2",
+    "jsonwebtoken": "^8.5.1",
     "r-orgchart": "0.0.6",
     "react": "^16.14.0",
     "react-addons-update": "^15.6.2",
