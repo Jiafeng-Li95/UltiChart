@@ -1,29 +1,95 @@
 import React from 'react';
-import { Col, Form, Button } from 'react-bootstrap';
 import './App.css';
-import OrgChart from './components/OrgChart';
+import LeftSidebar from './components/Sidebar';
+import axios from 'axios';
+import { Input, Layout } from 'antd';
+import 'antd/dist/antd.css';
+import logo from './Ultimate_Software_logo.svg.png'
+
+const { Search } = Input;
+const { Header, Content, Footer } = Layout;
 
 class Home extends React.Component {
-  
+  constructor(props) {
+    super(props);
+    this.state = {
+      nodes: [],
+      modalVisble: true,
+    };
+    this.onClickhandle = this.onClickhandle.bind(this);
+    this.onChangeVisible = this.onChangeVisible.bind(this);
+  }
+
+  componentDidMount() {
+    axios.get('/employees')
+      .then(
+        (result) => {
+          const nodes = result.data;
+          this.setState({ nodes });
+          console.log(this.state.nodes);
+        }
+      )
+  }
+
+  onChangeVisible(e) {
+    this.setState({ modalVisble: e.target.modalVisble })
+  }
+
   handleOnClick() {
     alert();
   }
 
+  onClickhandle() {
+    console.log(this.state.nodes);
+  }
+  onFinish = (values) => {
+    console.log('Success:', values);
+  }
+  onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  }
+
   render() {
+
+    const onSearch = value => console.log(value);
+
     return (
-      <div className="home">
-        <div>
-          <h1 className="home-text">Home</h1>
-          <Form>
-            <Form.Row style={{ display: "flex", justifyContent: "center", paddingBottom: "10px" }}>
-              <Col xs="auto" ><Form.Control placeholder="First name" /></Col>
-              <Col xs="auto" ><Form.Control placeholder="Last name" /></Col>
-              <Col xs="auto" ><Button variant="outline-info" onClick={this.handleOnClick}>Search</Button></Col>
-            </Form.Row>
-          </Form>
-        </div>
-        <OrgChart/>
-      </div>
+      <Layout >
+        <LeftSidebar />
+        <Content style={{ marginRight: "auto", marginLeft: "auto" }} >
+          <br />
+          <img
+            src={logo}
+            alt="Logo"
+            width={430}
+            height={180}
+          />
+          <br />
+          <Search
+            placeholder="Search by name"
+            onSearch={onSearch} 
+            enterButton
+            size="large"
+            allowClear
+            style={{ width: 450 }} />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>Org Chart Created by Covid Coders</Footer>
+      </Layout>
     );
   }
 }
