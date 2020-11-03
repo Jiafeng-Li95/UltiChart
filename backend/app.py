@@ -114,6 +114,20 @@ def update_employee():
         # Return error 400.
         return render_template('error.html'), 400
 
+# Remove json data via Postman from server. Also removes data directly from MongoDB.
+# Removes the employee based on email.
+@app.route("/remove/<email>", methods=["DELETE"])
+def remove_employee(email):
+    all_employees = list(collection.find({}))
+    """ Returns the first occurence of the object with the given email """
+    current_employee = collection.find_one({"email": email})
+    """ Removes the employee from the server """
+    all_employees.remove(current_employee)
+    """ Removes the employee from MongoDB """
+    collection.delete_one(current_employee)
+    """ Return """
+    return 'None', 200
+
 #login
 jwt = JWTManager(app)
 
