@@ -58,7 +58,8 @@ def get_employees():
         # The frontend will be notified of the error.
         flash('data is not in json format')
         # Return error 400.
-        return render_template('error.html'), 400"""
+        return render_template('error.html'), 400
+"""
 
 # Get the data from the Mongo Server.
 
