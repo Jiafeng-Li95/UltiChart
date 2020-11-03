@@ -4,10 +4,12 @@ import LeftSidebar from './components/Sidebar';
 import axios from 'axios';
 import { Input, Layout } from 'antd';
 import 'antd/dist/antd.css';
-import logo from './Ultimate_Software_logo.svg.png'
+import logo from './Ultimate_Software_logo.svg.png';
+import OrgChart from './components/OrgChart.js'
+import './App.css';
 
 const { Search } = Input;
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 class Home extends React.Component {
   constructor(props) {
@@ -56,30 +58,33 @@ class Home extends React.Component {
     return (
       <Layout >
         <LeftSidebar />
-        <Content style={{ marginRight: "auto", marginLeft: "auto" }} >
+        <Content >
           <br />
           <img
+            className="logo-design"
             src={logo}
             alt="Logo"
-            width={430}
-            height={180}
           />
           <br />
-          <Search
-            placeholder="Search by name"
-            onSearch={onSearch} 
-            enterButton
-            size="large"
-            allowClear
-            style={{ width: 450 }} />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+            <Search
+              placeholder="Search by name"
+              onSearch={onSearch}
+              enterButton
+              size="large"
+              allowClear
+              style={{ width: 500 }}
+            />
+          </div>
+
+          <div>
+            <OrgChart />
+          </div>
+
           <br />
           <br />
           <br />

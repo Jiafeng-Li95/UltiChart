@@ -22,12 +22,3 @@ function App() {
 
 export default App;
 
-
-{/* <Navbar className ="navbar"  variant = "dark">
-        <Navbar.Brand href="/" >UltiChart</Navbar.Brand>
-        <Nav className = "navbar-main">
-          <Nav.Link href = "/">Home</Nav.Link>
-          <Nav.Link href = "/login">Login</Nav.Link>
-          <Nav.Link href = "/requests">Requests</Nav.Link>
-        </Nav>
-      </Navbar> */}

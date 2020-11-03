@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import BurgerButton from '../BurgerButton';
 import { LeftSideBarContext } from '../index';
 import './style.scss';
-import { Modal, Form, Input, Button, Layout } from 'antd';
+import { Modal, Form, Input} from 'antd';
 import 'antd/dist/antd.css';
 
 const LeftSection = (props) => {

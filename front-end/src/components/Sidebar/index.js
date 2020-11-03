@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import TopSection from './TopSection';
 import LeftSection from './LeftSection';
 import './style.scss';
-import { Modal, Form, Input, Button, Layout } from 'antd';
 import 'antd/dist/antd.css';
 
 export const LeftSideBarContext = React.createContext({})
 
-const LeftSideBar = (props) => {
+const LeftSideBar = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   return (
     <LeftSideBarContext.Provider

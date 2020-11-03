@@ -283,3 +283,15 @@ div.org-chart-container, div.org-chart-container div, div.org-chart-container ta
         box-shadow: none;
     }
 }
+
+.logo-design {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20%;
+}
+
+.search-style{
+    margin-left: auto;
+    margin-right: auto;
+}
