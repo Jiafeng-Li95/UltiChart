@@ -7,9 +7,12 @@ import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Card from 'react-bootstrap/Card'
 import CardDeck from 'react-bootstrap/CardDeck'
+import decode from 'jwt-decode'
 import Dropdown from 'react-bootstrap/Dropdown'
 
 import './App.css';
+
+
 
 const popover = (
   <Popover id="popover-basic">
@@ -62,9 +65,13 @@ function Options({ options }) {
   );
 }
 
+
+
 // forwardRef again here!
 // Dropdown needs access to the DOM of the Menu to measure it
 const CustomMenu = React.forwardRef(
+
+
   ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
     const [value, setValue] = React.useState('');
 
@@ -93,7 +100,18 @@ const CustomMenu = React.forwardRef(
   },
 );
 
-function Requests() {
+class Requests extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: ""
+    };}
+  componentDidMount() {
+    const token = localStorage.getItem('atoken')
+    let decoded = decode(token)
+    this.setState({email: decoded.identity})
+  }
+  render(){
   return (
     <div>
       <h1 className="home-text">
@@ -166,7 +184,7 @@ function Requests() {
 
     </div>
   );
-}
+}}
 
 export default Requests;
 

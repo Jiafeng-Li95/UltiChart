@@ -10,11 +10,13 @@ const TopSection = () => {
       <BurgerButton
         onClick={() => setIsShowSidebar(true)}
       />
+      
       {/* <a href="/" className="a_position"> */}
         <h1 className="Welcome_Content">Welcome,UltiChart</h1>
       {/* </a> */}
       <a href="/login" >
-        <h6 className="Logout_Content">Log out</h6>
+        <h6 className="Logout_Content" onClick = {()=>{localStorage.removeItem("atoken")
+                        window.location.replace("/login");}}>Log out</h6>
       </a>
     </div>
   );

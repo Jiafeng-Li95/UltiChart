@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import LeftSidebar from './components/Sidebar';
 import axios from 'axios';
 import { Input, Layout } from 'antd';
 import 'antd/dist/antd.css';
 import logo from './Ultimate_Software_logo.svg.png';
 import OrgChart from './components/OrgChart.js'
+import decode from 'jwt-decode'
 import './App.css';
 
 const { Search } = Input;
@@ -17,17 +17,21 @@ class Home extends React.Component {
     this.state = {
       nodes: [],
       modalVisble: true,
+      email: ""
     };
     this.onClickhandle = this.onClickhandle.bind(this);
     this.onChangeVisible = this.onChangeVisible.bind(this);
   }
 
   componentDidMount() {
+    const token = localStorage.getItem('atoken')
+    let decoded = decode(token)
+    this.setState({email: decoded.identity})
     axios.get('/employees')
       .then(
         (result) => {
           const nodes = result.data;
-          this.setState({ nodes });
+          this.setState({nodes: nodes });
           console.log(this.state.nodes);
         }
       )
@@ -57,7 +61,6 @@ class Home extends React.Component {
 
     return (
       <Layout >
-        <LeftSidebar />
         <Content >
           <br />
           <img
