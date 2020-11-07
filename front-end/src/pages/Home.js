@@ -1,12 +1,11 @@
 import React from 'react';
-import './App.css';
+import '../App.css';
 import axios from 'axios';
 import { Input, Layout } from 'antd';
 import 'antd/dist/antd.css';
-import logo from './Ultimate_Software_logo.svg.png';
-import OrgChart from './components/OrgChart.js'
+import logo from '../images/Ultimate_Software_logo.svg.png';
+import OrgChart from '../components/OrgChart.js'
 import decode from 'jwt-decode'
-import './App.css';
 
 const { Search } = Input;
 const { Content, Footer } = Layout;

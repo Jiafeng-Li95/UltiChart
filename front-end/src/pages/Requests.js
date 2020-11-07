@@ -10,7 +10,7 @@ import CardDeck from 'react-bootstrap/CardDeck'
 import decode from 'jwt-decode'
 import Dropdown from 'react-bootstrap/Dropdown'
 
-import './App.css';
+import '../App.css';
 
 
 
