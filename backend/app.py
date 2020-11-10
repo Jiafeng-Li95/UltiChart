@@ -61,6 +61,42 @@ def get_employees():
         return render_template('error.html'), 400
 """
 
+@app.route("/search", methods=["GET"])
+def complete_search():
+    all_employees = list(collection.find({}))
+    if request.is_json:
+        # result = []
+        
+        field_value = request.get_json() # Decodes from JSON to Python dict
+        field_value_as_list = list(field_value.items()) # Converts dict to list
+        
+        """Testing
+        search_text = field_value_as_list[0][1]
+        fake_return = {search_text: field_value_as_list}
+        return fake_return, 200
+        """
+        
+        field_name = field_value_as_list[0][0] # Gets field name you want to search by
+        search_text = field_value_as_list[0][1] # Gets value of field name
+        # drop index if it exists 
+        # collection.drop_index(field_name)
+        collection.create_index([(field_name, 'text')])
+
+        # matched_emps = collection.find({"$text": {"$search": search_text}})
+        matched_emp = collection.find_one({"$text": {"$search": search_text}}) # Finds first occurrence of matched text (value)
+
+        """for employee in matched_emps:
+            result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})"""
+
+        return jsonify({"employeeId": matched_emp["employeeId"], "firstName": matched_emp["firstName"], "lastName": matched_emp["lastName"], "email": matched_emp["email"]}), 200
+        # return jsonify({"matched_employees": result}), 200
+    # The user did not enter json format.
+    else:
+        # The frontend will be notified of the error.
+        flash('data is not in json format')
+        # Return error 400.
+        return render_template('error.html'), 400
+
 # Get the data from the Mongo Server.
 
 # Input data in json format...
