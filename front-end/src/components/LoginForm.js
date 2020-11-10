@@ -14,6 +14,8 @@ class LoginForm extends React.Component{
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+
+
     handleChange(event){
         const target = event.target;
         const value = target.value;
@@ -21,6 +23,7 @@ class LoginForm extends React.Component{
         this.setState({
             [name]: value });
     }
+
 
 
     handleSubmit(event){
@@ -32,9 +35,10 @@ class LoginForm extends React.Component{
             localStorage.setItem("atoken", response.data.access_token)
             window.location.replace("/");
         })
-        .catch(function(error){
+         .catch(function(error){
             alert("Incorrect email or password.")
         })
+     
         event.preventDefault();
     }
 

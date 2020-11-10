@@ -1,73 +1,55 @@
 import React, { Component } from 'react';
-import OrgChart from '@balkangraph/orgchart.js';
+import axios from 'axios'
 
 export default class extends Component {
 
      constructor(props) {
-       super(props);
-       this.data = [
-           {id: 1,
-            name: "Adrienne Hawkins",
-            positionTitle: "CEO",
-            email: "Adrienne_Hawkins@nightwellenterprise.com",
-            startDate: "1995-11-06"
-        },
-        {
-            id: 2,
-            pid: 1,
-            name: "Bernadine Richard",
-            positionTitle: "Engineering Manager",
-            email: "Bernadine_Richard@nightwellenterprise.com",
-            startDate: "2016-07-22"
-        },
-        {
-            id: 3,
-            pid: 2,
-            name: "Cleveland Jensen",
-            positionTitle: "Engineering Manager",
-            email: "Cleveland_Jensen@nightwellenterprise.com",
-            startDate: "2006-01-26"
-        },
-        {
-            id: 4,
-            pid: 2,
-            name: "Janelle Melendez",
-            positionTitle: "Engineering Manager",
-            email: "Janelle_Melendez@nightwellenterprise.com",
-            startDate: "2005-05-01"
-        },
-        {
-            id: 5,
-            pid: 4,
-            name: "Allen Black",
-            positionTitle: "Engineering Manager",
-            email: "Allen_Black@nightwellenterprise.com",
-            startDate: "2010-07-06"
-        },]
-       this.divRef = React.createRef();
+        super(props);
+        this.state = {
+            nodeBinding: {
+                field_0: "firstName",
+                field_1: "positionTitle"
+            },
+            nodes: []
+        }
      }
 
-   shouldComponentUpdate() {
-       return false;
-   }
+     componentDidMount() {
+     }
 
-   componentDidMount() {
-       this.chart = new OrgChart(this.divRef.current , {
-           nodes: this.data,
+    renameKey(obj, oldKey, newKey) {
+        obj[newKey] = obj[oldKey];
+        delete obj[oldKey];
+    }
 
-           nodeBinding: {
-               field_0: "name",
-               field_1: "positionTitle",
-               field_2: "email",
-               field_3: "startDate"
-           },
-       });
+   componentDidUpdate(prev) {
+       if (prev.user !== this.props.user) {
+        axios.all([
+            axios.get('/details/'.concat(this.props.user.email)),
+            axios.get('/employees')
+        ])
+        .then(axios.spread((det, emp) => {
+            det.data.directReports.forEach(obj =>this.renameKey(obj, 'employeeID', 'id'));
+            det.data.directReports.forEach(obj =>this.renameKey(obj, 'managerID', 'pid'));
+            let manager = emp.data.filter(manager => manager.employeeId === det.data.employeeId)[0];
+            this.renameKey(manager, 'employeeId', 'id');
+            this.setState({nodes: det.data.directReports})
+            this.setState({nodes: [...this.state.nodes, manager]})
+        }));
 
-   }
+        }
+        const s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true; 
+        s.innerHTML = "var chart = new OrgChart(document.getElementById(\"tree\")," + JSON.stringify(this.state) + ");";
+        this.instance.appendChild(s);
+
+    }
 
    render() {
+       console.log(this.state.nodes)
        return (
-            <div id="tree" ref={this.divRef}></div>
+            <div id="tree" ref={el => (this.instance = el)} />
        );
    }
 }

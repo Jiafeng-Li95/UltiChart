@@ -31,10 +31,10 @@ class Home extends React.Component {
         (result) => {
           const nodes = result.data;
           this.setState({nodes: nodes });
-          console.log(this.state.nodes);
         }
       )
   }
+
 
   onChangeVisible(e) {
     this.setState({ modalVisble: e.target.modalVisble })
@@ -57,7 +57,6 @@ class Home extends React.Component {
   render() {
 
     const onSearch = value => console.log(value);
-
     return (
       <Layout >
         <Content >
@@ -84,7 +83,7 @@ class Home extends React.Component {
           </div>
 
           <div>
-            <OrgChart />
+            <OrgChart user={this.state}/>
           </div>
 
           <br />
