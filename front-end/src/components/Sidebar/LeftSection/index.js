@@ -3,25 +3,118 @@ import React, { useContext, useState } from 'react';
 import BurgerButton from '../BurgerButton';
 import { LeftSideBarContext } from '../index';
 import './style.scss';
-import { Modal, Form, Input} from 'antd';
+import { Modal, Button } from 'react-bootstrap';
 import 'antd/dist/antd.css';
+import axios from 'axios';
+import Form from 'react-jsonschema-form';
 
-const LeftSection = (props) => {
+
+const LeftSection = () => {
   const { isShowSidebar, setIsShowSidebar } = useContext(LeftSideBarContext);
-  const [isShowHirePopUp, setIsShowHirePopUp] = useState(false);
-  const [isShowRemovePopUp, setIsShowRemovePopUp] = useState(false);
-  const [isShowChangeManagerPopUp, setIsShowChangeManagerPopUp] = useState(false);
+  const [ isShowHirePopUp , setIsShowHirePopUp ] = useState(false);
+  const [ isShowUpdatePopUp, setIsShowUpdatePopUp ] = useState(false);
+  const [ isShowRemovePopUp, setIsShowRemovePopUp ] = useState(false);
+  const [ isShowChangeManagerPopUp, setIsShowChangeManagerPopUp ] = useState(false);
+  const [ isShowEmailErrorPopUp, setIsShowEmailErrorPopUp ] = useState(false);
+  //variable use in the form
+  const [ email, setEmail ] = useState('');
 
-  function onHandleHire() {
-    setIsShowHirePopUp(true);
+  const schema = {
+    type: 'object',
+    required: ['firstName'],
+    properties: {
+      firstName: {
+        title: 'First Name',
+        type: 'string',
+      },
+      lastName: {
+        title: 'Last Name',
+        type: 'string'
+      },
+      companyId: {
+        title: 'company Id',
+        type: 'integer'
+      },
+      password: {
+        title: 'password',
+        type: 'string'
+      },
+      positionTitle: {
+        title: 'position title',
+        type: 'string'
+      },
+      companyName: {
+        title: 'company name',
+        type: 'string'
+      },
+      isManager: {
+        title: ' isManager',
+        type: 'boolean'
+      },
+      employeeId: {
+        title: 'employeeId',
+        type: 'integer'
+      },
+      managerId: {
+        title: 'managerId',
+        type: 'integer'
+      },
+      email: {
+        title: 'email',
+        type: 'string'
+      },
+      startDate: {
+        title: 'startDate',
+        type: 'string'
+      },
+    }
   }
-  function onHandleRemove() {
-    setIsShowRemovePopUp(true);
+  const uiSchema = {
+    email: {
+      "ui:options": {
+        inputType: 'email',
+      },
+      "ui:placeholder": "example@tigermicrosystems.com"
+    },
+    password: {
+      "ui:options": {
+        inputType: 'password',
+      }
+    },
+    companyName: {
+      "ui:placeholder": "Tiger Microsystems"
+    },
+    startDate: {
+      "ui:placeholder": "Year-month-day"
+    },
+    companyId: {
+      "ui:placeholder": "2"
+    }
   }
-  function onHandleChangeManager() {
-    setIsShowChangeManagerPopUp(true);
-  }
-
+  //complement Hire route
+  const sendHireData = ((data) => {
+    // axios.post('/hire', data)
+    //   .then((result) => {
+    //       console.log(result);
+    //     })
+    console.log(JSON.stringify(data));
+  })
+  //complement update route
+  const sendUpdateData = ((data) => {
+    // axios.put('/update', data)
+    //   .then((result) => {
+    //       console.log(result);
+    //     })
+    console.log(JSON.stringify(data));
+  })
+  //complement remove route
+  const sendRemove = ((email) => {
+    axios.delete('/remove/'+email)
+      .then((result) => {
+          console.log(result);
+        })
+    console.log(JSON.stringify(email));
+  })
 
   return (
     <div className={`LeftSideBar__LeftSection LeftSideBar__LeftSection--${isShowSidebar ? 'show' : 'hide'}`}>
@@ -38,107 +131,124 @@ const LeftSection = (props) => {
           <a href="/requests" >Request</a>
         </li>
         <li>
-          <a onClick={onHandleHire}>Hire Employee</a>
+          <a onClick={() => setIsShowHirePopUp(true)}>Hire Employee</a>
         </li>
         <li>
-          <a onClick={onHandleRemove}>Remove Employee</a>
+          <a onClick={() => setIsShowUpdatePopUp(true)}>Update Employee</a>
         </li>
         <li>
-          <a onClick={onHandleChangeManager}>Change Manager</a>
+          <a onClick={() => setIsShowRemovePopUp(true)}>Remove Employee</a>
+        </li>
+        <li>
+          <a onClick={() => setIsShowChangeManagerPopUp(true)}>Change Manager</a>
         </li>
       </ul>
+
+      {/* Update employee Modal*/}
       <Modal
-        title="Hire Employee"
-        centered
-        visible={isShowHirePopUp}
-        onOk={() => setIsShowHirePopUp(false)}
-        onCancel={() => setIsShowHirePopUp(false)}
-      >
-        <Form
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 14 }}
-          layout="horizontal"
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item label="First Name">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Last Name">
-            <Input />
-          </Form.Item>
-        </Form>
+        show={isShowUpdatePopUp}
+        onHide={() => setIsShowUpdatePopUp(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            schema={schema}
+            uiSchema={uiSchema}
+            onSubmit={({ formData }) => sendUpdateData(formData)}
+          /></Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsShowUpdatePopUp(false)}>close</Button>
+        </Modal.Footer>
       </Modal>
+
+      {/* Hire employee Modal*/}
       <Modal
-        title="Remove Employee"
-        centered
-        visible={isShowRemovePopUp}
-        onOk={() => setIsShowRemovePopUp(false)}
-        onCancel={() => setIsShowRemovePopUp(false)}
-      >
-        <Form
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 14 }}
-          layout="horizontal"
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item label="First Name">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Last Name">
-            <Input />
-          </Form.Item>
-        </Form>
+        show={isShowHirePopUp}
+        onHide={() => setIsShowHirePopUp(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Hire Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form
+            schema={schema}
+            uiSchema={uiSchema}
+            onSubmit={({ formData }) => sendHireData(formData)}
+          /></Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsShowHirePopUp(false)}>close</Button>
+        </Modal.Footer>
       </Modal>
+
+      {/* Remove employee Modal*/}
       <Modal
-        title="Change Manager"
-        centered
-        visible={isShowChangeManagerPopUp}
-        onOk={() => setIsShowChangeManagerPopUp(false)}
-        onCancel={() => setIsShowChangeManagerPopUp(false)}
-      >
-        <Form
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 14 }}
-          layout="horizontal"
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item label="First Name">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Last Name">
-            <Input />
-          </Form.Item>
-        </Form>
+        show={isShowRemovePopUp}
+        onHide={() => setIsShowRemovePopUp(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Remove Employee</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <br/>
+          <div>
+            <label htmlFor="exmapleInputEmail">
+              Email Address:
+          </label>
+          </div>
+          <div>
+            <input
+              type="email"
+              onChange={e => setEmail(e.target.value)}
+              ></input>
+          </div>
+          <br/>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsShowRemovePopUp(false)}>close</Button>
+          <Button onClick={() => { 
+            if(email.includes('@')){
+              setIsShowRemovePopUp(false); 
+              sendRemove(email);
+            }
+            else{
+              setIsShowEmailErrorPopUp(true);
+            }
+          }}>Submit</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Change manager Modal*/}
+      <Modal
+        show={isShowChangeManagerPopUp}
+        onHide={() => setIsShowChangeManagerPopUp(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Change Manager</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsShowChangeManagerPopUp(false)}>close</Button>
+          <Button onClick={() => { setIsShowChangeManagerPopUp(false); alert("succeed") }}>Submit</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Email Error Modal */}
+      <Modal
+        show={isShowEmailErrorPopUp}
+        onHide={() => setIsShowEmailErrorPopUp(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Error Message</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Email error, may includes @ in the email.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setIsShowEmailErrorPopUp(false)}>close</Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
