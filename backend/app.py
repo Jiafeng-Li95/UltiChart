@@ -33,9 +33,12 @@ def get_employees(email):
     all_employees = collection.find({"managerId": current_emp["employeeId"]})
 
     for employee in all_employees:
-        direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+        direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"], "managerID": employee["managerId"]})
+
+    current_employee = []
+    current_employee.append({"firstName": current_emp["firstName"], "lastName": current_emp["lastName"], "employeeId": current_emp["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"]})
     
-    return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports})
+    return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
 """ Alternate input data using JSON for details
 @app.route("/details", methods=["GET"])
