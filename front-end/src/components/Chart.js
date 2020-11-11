@@ -40,12 +40,13 @@ class Chart extends React.Component {
               console.log(error);
             });
         this.setState({nodes: chartData})
+        console.log(chartData)
   }
 }
 
      render(){
          return(
-             <Rorgchart data = {this.state.nodes} readonly = {true} lineColor = {"#005151"}/>
+             <Rorgchart data = {this.state.nodes} readonly = {true}/>
          )
      }
 }
