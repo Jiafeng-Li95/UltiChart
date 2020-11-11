@@ -49,6 +49,8 @@ class Chart extends React.Component {
         axios.get('/employees')
           .then(function (response) {
               let manager = response.data.filter(manager => manager.employeeId === currentId);
+              console.log(currentId)
+              console.log(manager)
               chartData.push({id: manager[0].employeeId, title: manager[0].firstName + " " + manager[0].lastName,  ParentId: null})
             })
             .catch(function (error) {
