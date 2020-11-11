@@ -6,6 +6,7 @@ import json
 from bson import json_util
 # Mac: export FLASK_APP=app.py flask run
 # To keep it in dev mode continuously: export FLASK_APP=app.py FLASK_ENV=development
+# All our data is loaded on the server side vs. rendering on frontend side so more secure
 
 # Change connection string depending on your python version. 
 cluster_320 =  MongoClient("mongodb://cc320:cc320@320-shard-00-00.8rfoj.mongodb.net:27017,320-shard-00-01.8rfoj.mongodb.net:27017,320-shard-00-02.8rfoj.mongodb.net:27017/320?ssl=true&replicaSet=atlas-mkdts8-shard-0&authSource=admin&retryWrites=true&w=majority")
@@ -33,9 +34,12 @@ def get_employees(email):
     all_employees = collection.find({"managerId": current_emp["employeeId"]})
 
     for employee in all_employees:
-        direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+        direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"], "managerID": employee["managerId"]})
+
+    current_employee = []
+    current_employee.append({"firstName": current_emp["firstName"], "lastName": current_emp["lastName"], "employeeId": current_emp["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"]})
     
-    return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports})
+    return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
 """ Alternate input data using JSON for details
 @app.route("/details", methods=["GET"])
@@ -61,7 +65,7 @@ def get_employees():
         return render_template('error.html'), 400
 """
 
-@app.route("/search", methods=["GET"])
+"""@app.route("/search", methods=["GET"])
 def complete_search():
     all_employees = list(collection.find({}))
     if request.is_json:
@@ -70,23 +74,23 @@ def complete_search():
         field_value = request.get_json() # Decodes from JSON to Python dict
         field_value_as_list = list(field_value.items()) # Converts dict to list
         
-        """Testing
+        Testing
         search_text = field_value_as_list[0][1]
         fake_return = {search_text: field_value_as_list}
         return fake_return, 200
-        """
+        
         
         field_name = field_value_as_list[0][0] # Gets field name you want to search by
         search_text = field_value_as_list[0][1] # Gets value of field name
         # drop index if it exists 
-        # collection.drop_index(field_name)
-        collection.create_index([(field_name, 'text')])
+        collection.drop_index(field_name)
+        collection.create_index([('field_name', 'text')])
 
         # matched_emps = collection.find({"$text": {"$search": search_text}})
         matched_emp = collection.find_one({"$text": {"$search": search_text}}) # Finds first occurrence of matched text (value)
 
-        """for employee in matched_emps:
-            result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})"""
+        for employee in matched_emps:
+            result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
 
         return jsonify({"employeeId": matched_emp["employeeId"], "firstName": matched_emp["firstName"], "lastName": matched_emp["lastName"], "email": matched_emp["email"]}), 200
         # return jsonify({"matched_employees": result}), 200
@@ -95,7 +99,21 @@ def complete_search():
         # The frontend will be notified of the error.
         flash('data is not in json format')
         # Return error 400.
-        return render_template('error.html'), 400
+        return render_template('error.html'), 400"""
+
+
+@app.route("/search/<search_text>", methods=["GET"])
+def complete_search(search_text):
+    result = []
+    matched_emps = collection.find({"$text": {"$search": search_text}}) # Finds first occurrence of matched text (value)
+    for employee in matched_emps:
+        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+
+    return jsonify({"matched_employees": result}), 200
+
+
+
+
 
 # Get the data from the Mongo Server.
 
