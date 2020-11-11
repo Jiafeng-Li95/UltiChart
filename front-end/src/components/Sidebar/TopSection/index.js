@@ -12,7 +12,7 @@ const TopSection = () => {
       />
       
       {/* <a href="/" className="a_position"> */}
-        <h1 className="Welcome_Content">Welcome,UltiChart</h1>
+        <h1 className="Welcome_Content">Welcome to UltiChart!</h1>
       {/* </a> */}
       <a href="/login" >
         <h6 className="Logout_Content" onClick = {()=>{localStorage.removeItem("atoken")

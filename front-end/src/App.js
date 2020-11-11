@@ -15,7 +15,7 @@ function App() {
       <ProtectedRoute component={LeftSidebar}/>
       <Switch>
         <Route path="/login" component={Login} />
-        <Route exact={true} path="/" component={Home} />
+        <ProtectedRoute exact={true} path="/" component={Home} />
         <ProtectedRoute path="/requests" component={Requests} />
         <ProtectedRoute component={Home} />
       </Switch>

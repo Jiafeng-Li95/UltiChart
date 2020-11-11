@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Input, Layout } from 'antd';
 import 'antd/dist/antd.css';
 import logo from '../images/Ultimate_Software_logo.svg.png';
-import OrgChart from '../components/OrgChart.js'
+import Chart from '../components/Chart.js'
 import decode from 'jwt-decode'
 
 const { Search } = Input;
@@ -83,9 +83,15 @@ class Home extends React.Component {
           </div>
 
           <div>
-            <OrgChart user={this.state}/>
+            <Chart/>
           </div>
 
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
           <br />
           <br />
           <br />
