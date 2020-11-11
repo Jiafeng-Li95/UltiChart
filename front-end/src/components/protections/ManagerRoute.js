@@ -10,11 +10,14 @@ class ManagerRoute extends React.Component {
         const token = localStorage.getItem('atoken')
         let decoded = decode(token)
         let email = decoded.identity
-        let isManager = true;
+        let isManager = false;
         
         axios.get('/isManager/' + email)
         .then(function (response) {
-            console.log(response)
+            let string = response.data
+            if(string.localeCompare("isManager") === 0){
+                isManager = true
+            }
           })
           .catch(function (error) {
             console.log(error);

@@ -17,7 +17,7 @@ function App() {
       <Switch>
         <Route path="/login" component={Login} />
         <ProtectedRoute exact={true} path="/" component={Home} />
-        <ManagerRoute path="/requests" component={Requests} />
+        <ProtectedRoute path="/requests" component={Requests} />
         <ProtectedRoute component={Home} />
       </Switch>
     </Router>
