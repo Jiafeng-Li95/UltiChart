@@ -36,7 +36,7 @@ def get_employees(email):
         direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"], "managerID": employee["managerId"]})
 
     current_employee = []
-    current_employee.append({"firstName": current_emp["firstName"], "lastName": current_emp["lastName"], "employeeId": current_emp["employeeId"], "positionTitle": employee["positionTitle"], "email": employee["email"]})
+    current_employee.append({"firstName": current_emp["firstName"], "lastName": current_emp["lastName"], "employeeId": current_emp["employeeId"], "positionTitle": current_emp["positionTitle"], "email": current_emp["email"]})
     
     return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
