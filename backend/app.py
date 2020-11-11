@@ -160,6 +160,23 @@ def login():
 if __name__ == '__main__':
     app.run(debug=True)
 
+#route to check if a user is a manager or not 
+@app.route("/isManager/<email>", methods=["GET"])
+def is_Manager(email):
+    current_emp = collection.find_one({"email": email}) #getting the current user object
+
+    if current_emp: #if the current user is a valid user
+
+        if current_emp["isManager"] == True: #checking if the user is a manager or not
+            return "isManager"
+        else:
+             return "isNotManager"
+    else:
+        return "employee not found"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 """
 # Add json data via Postman to the requests. 
 @app.route("/sendManagerRequest", methods=["POST"])
