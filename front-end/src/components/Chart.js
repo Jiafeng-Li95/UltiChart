@@ -40,7 +40,7 @@ class Chart extends React.Component {
         let currentId = ""
         axios.get('/details/' + this.state.user)
           .then(function (response) {
-            response.data.directReports.forEach(obj => chartData.push({id: obj['employeeID'], title: obj['firstName'] + " " + obj['lastName'],  ParentId: obj['managerID']}))
+            response.data.directReports.forEach(obj => chartData.push({id: obj.employeeID, title: obj.firstName + " " + obj.lastName,  ParentId: obj.managerID}))
             currentId = response.data.employeeId
           })
           .catch(function (error) {
@@ -49,7 +49,7 @@ class Chart extends React.Component {
         axios.get('/employees')
           .then(function (response) {
               let manager = response.data.filter(manager => manager.employeeId === currentId);
-              chartData.push({id: manager[0]['employeeId'], title: manager[0]['firstName'] + " " + manager[0]['lastName'],  ParentId: null})
+              chartData.push({id: manager[0].employeeId, title: manager[0].firstName + " " + manager[0].lastName,  ParentId: null})
             })
             .catch(function (error) {
               console.log(error);
