@@ -19,8 +19,23 @@ class Chart extends React.Component {
         this.setState({user: decoded.identity})
     }
 
+    compareState(prev){
+      if (prev.user !== this.state.user){
+        return false
+      }
+      if(prev.nodes.length !== this.state.nodes.length){
+        return false
+      }
+      for(let i = 0; i<this.state.nodes.length; i++){
+        if(prev.nodes[i].id !== this.state.nodes[i].id){
+          return false
+        }
+      }
+      return true
+    }
+
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.user !== this.state.user) {
+    if (this.compareState(prevState) === false) {
         let chartData = []
         let currentId = ""
         axios.get('/details/' + this.state.user)
@@ -40,7 +55,6 @@ class Chart extends React.Component {
               console.log(error);
             });
         this.setState({nodes: chartData})
-        console.log(chartData)
   }
 }
 

@@ -34,6 +34,7 @@ class LoginForm extends React.Component{
         .then(function(response){
             localStorage.setItem("atoken", response.data.access_token)
             window.location.replace("/");
+            window.location.replace("/");
         })
          .catch(function(error){
             alert("Incorrect email or password.")
