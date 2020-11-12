@@ -37,23 +37,15 @@ class Chart extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.compareState(prevState) === false) {
         let chartData = []
-        let currentId = ""
         axios.get('/details/' + this.state.user)
           .then(function (response) {
+            let manager = response.data.currentEmployee[0]
+            chartData.push({id: manager.employeeId, title: manager.firstName + " " + manager.lastName, ParentId: null})
             response.data.directReports.forEach(obj => chartData.push({id: obj.employeeID, title: obj.firstName + " " + obj.lastName,  ParentId: obj.managerID}))
-            currentId = response.data.employeeId
           })
           .catch(function (error) {
             console.log(error);
           });
-        axios.get('/employees')
-          .then(function (response) {
-              let manager = response.data.filter(manager => manager.employeeId === currentId);
-              chartData.push({id: manager[0].employeeId, title: manager[0].firstName + " " + manager[0].lastName,  ParentId: null})
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
         this.setState({nodes: chartData})
   }
 }
