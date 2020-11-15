@@ -41,7 +41,8 @@ class Chart extends React.Component {
           .then(function (response) {
             let manager = response.data.currentEmployee[0]
             chartData.push({id: manager.employeeId, title: manager.firstName + " " + manager.lastName, ParentId: null})
-            response.data.directReports.forEach(obj => chartData.push({id: obj.employeeID, title: obj.firstName + " " + obj.lastName,  ParentId: obj.managerID}))
+            response.data.directReports.forEach(obj => chartData.push({id: obj.employeeID, title: obj.firstName + 
+              " " + obj.lastName,  ParentId: obj.managerID}))
           })
           .catch(function (error) {
             console.log(error);

@@ -285,13 +285,20 @@ div.org-chart-container, div.org-chart-container div, div.org-chart-container ta
 }
 
 .logo-design {
-    display: block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
     margin-left: auto;
     margin-right: auto;
-    width: 20%;
+    width: 80%;
 }
 
-.search-style{
-    margin-left: auto;
-    margin-right: auto;
-}
+/* navigationbar */
+#components-layout-demo-fixed-sider .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+  }
+  .site-layout .site-layout-background {
+    background: #fff;
+  }

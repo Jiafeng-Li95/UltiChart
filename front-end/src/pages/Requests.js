@@ -9,10 +9,15 @@ import Card from 'react-bootstrap/Card'
 import CardDeck from 'react-bootstrap/CardDeck'
 import decode from 'jwt-decode'
 import Dropdown from 'react-bootstrap/Dropdown'
-
+import { Layout, Menu } from 'antd';
+import {
+  HomeOutlined,
+  PullRequestOutlined, LogoutOutlined
+} from '@ant-design/icons';
 import '../App.css';
+import logo from '../images/Ultimate_Software_logo.svg.png';
 
-
+const { Header, Sider, Content, Footer } = Layout;
 
 const popover = (
   <Popover id="popover-basic">
@@ -100,91 +105,145 @@ const CustomMenu = React.forwardRef(
   },
 );
 
-class Requests extends React.Component{
+class Requests extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       email: ""
-    };}
+    };
+  }
   componentDidMount() {
     const token = localStorage.getItem('atoken')
     let decoded = decode(token)
-    this.setState({email: decoded.identity})
+    this.setState({ email: decoded.identity })
   }
-  render(){
-  return (
-    <div>
-      <h1 className="home-text">
-        Requests
-      </h1>
-      <Container>
-        <Row>
-          <Col xs={10} md={7}>
-            <br></br>
-            <br></br>
-            <div>
-              <NewRequest />
-              <br></br>
+  render() {
+    return (
+      /* Careful : */
+      /* navigation bar with the content field (make changes in the content field)*/
+
+      <Layout>
+        <Sider
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+          }}
+        >
+          <div className="logo" />
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['2']}>
+            <img
+              className="logo-design"
+              src={logo}
+              alt="Logo"
+            />
+            <Menu.Item
+              key="1"
+              icon={<HomeOutlined />}>
+              Home
+              <a href="/"></a>
+            </Menu.Item>
+            <Menu.Item
+              key="2"
+              icon={<PullRequestOutlined />}>
+              <a href="/requests"></a>
+              Requests
+        </Menu.Item>
+            <Menu.Item
+              style={{ marginTop: 50 }}
+              key="3"
+              icon={<LogoutOutlined />}>
+              <a href="/login"></a>
+              Logout
+        </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout className="site-layout" style={{ marginLeft: 200 }}>
+          <Header >
+          </Header>
+          <Content style={{ margin: '50px 20px 50px', overflow: 'initial' }}>
+            <div className="site-layout-background" style={{ padding: 10, textAlign: 'center', minHeight: 500 }}>
+              
+            {/*------- this field is for content *-------*/}
+
+              <h1 className="home-text">
+                Requests
+              </h1>
+              <Container>
+                <Row>
+                  <Col xs={10} md={7}>
+                    <br></br>
+                    <br></br>
+                    <div>
+                      <NewRequest />
+                      <br></br>
               Select an Employee
               <Dropdown>
-                <Dropdown.Toggle style={{ width: '19rem' }} variant="secondary" id="dropdown-custom-components">
-                  Select an Employee
+                        <Dropdown.Toggle style={{ width: '19rem' }} variant="secondary" id="dropdown-custom-components">
+                          Select an Employee
                 </Dropdown.Toggle>
-                <Dropdown.Menu as={CustomMenu}>
-                  <Options options={namesList} />
-                </Dropdown.Menu>
-              </Dropdown>
-              <br></br>
-              <Form>
-                <Form.Label>Or Enter Employee Name</Form.Label>
-                <Row>
-                  <Col>
-                    <Form.Control placeholder="First name" />
+                        <Dropdown.Menu as={CustomMenu}>
+                          <Options options={namesList} />
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      <br></br>
+                      <Form>
+                        <Form.Label>Or Enter Employee Name</Form.Label>
+                        <Row>
+                          <Col>
+                            <Form.Control placeholder="First name" />
+                          </Col>
+                          <Col>
+                            <Form.Control placeholder="Last name" />
+                          </Col>
+                        </Row>
+                      </Form>
+                      <br></br>
+                      <Form>
+                        <br></br>
+                        <Form.Group controlId="exampleForm.ControlTextarea1">
+                          <Form.Label>Place any comments for this employees current manager here</Form.Label>
+                          <Form.Control as="textarea" rows="3" placeholder="additional comments" />
+                        </Form.Group>
+                      </Form>
+                    </div>
+                    <br></br>
+                    <Button variant="outline-secondary" size="lg" block>
+                      Submit
+            </Button>
                   </Col>
-                  <Col>
-                    <Form.Control placeholder="Last name" />
+                  <Col xs={6} md={5}>
+                    <br></br>
+                    <br></br>
+                    <ManageRequests />
+                    <br></br>
+                    <CardDeck>
+                      <Card style={{ width: '18rem' }}>
+                        <Card.Body>
+                          <Card.Title>Transfer Request</Card.Title>
+                          <Card.Subtitle className="mb-2 text-muted">Employee Name</Card.Subtitle>
+                          <Card.Text>
+                            (Manager Name) has requested your employee, (Employee Name), be transfered to his team.
+                </Card.Text>
+                          <Card.Link href="#">Accept</Card.Link>
+                          <Card.Link href="#">Decline</Card.Link>
+                        </Card.Body>
+                      </Card>
+                    </CardDeck>
                   </Col>
                 </Row>
-              </Form>
-              <br></br>
-              <Form>
-                <br></br>
-                <Form.Group controlId="exampleForm.ControlTextarea1">
-                  <Form.Label>Place any comments for this employees current manager here</Form.Label>
-                  <Form.Control as="textarea" rows="3" placeholder="additional comments" />
-                </Form.Group>
-              </Form>
-            </div>
-            <br></br>
-            <Button variant="outline-secondary" size="lg" block>
-              Submit
-            </Button>
-          </Col>
-          <Col xs={6} md={5}>
-            <br></br>
-            <br></br>
-            <ManageRequests />
-            <br></br>
-            <CardDeck>
-              <Card style={{ width: '18rem' }}>
-                <Card.Body>
-                  <Card.Title>Transfer Request</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">Employee Name</Card.Subtitle>
-                  <Card.Text>
-                    (Manager Name) has requested your employee, (Employee Name), be transfered to his team.
-                </Card.Text>
-                  <Card.Link href="#">Accept</Card.Link>
-                  <Card.Link href="#">Decline</Card.Link>
-                </Card.Body>
-              </Card>
-            </CardDeck>
-          </Col>
-        </Row>
-      </Container>
+              </Container>
 
-    </div>
-  );
-}}
+            {/*------- this field is for content *-------*/}
+            </div>
+          </Content>
+          <Footer style={{ textAlign: 'center' }}>Organization Chart ©2020 Created by Covid Coder Team</Footer>
+        </Layout>
+      </Layout>
+    );
+  }
+}
 
 export default Requests;
 
