@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, sessions
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 import pymongo
@@ -46,13 +47,11 @@ def get_employees():
     Find employee object with given email and retrieve empID. Get all employees where managerId == empId.
     Returns empId and direct reports of employee we are looking at.
     Note: Direct reports are defined as an employee who has the current empId as managerId.
-
     if request.is_json:
         direct_reports = []
         email_address = request.get_json()
         current_emp = collection.find_one({"email": email_address["email"]})
         all_employees = collection.find({"managerId": current_emp["employeeId"]})
-
         for employee in all_employees:
             direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
         return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports}), 200
@@ -205,13 +204,11 @@ def send_manager_request():
 @jwt_required
 def view_manager_request():
     rcollection = db["Requests"]
-
     userID = None
     for u in collection['email']:
         if get_jwt_identity() == u['email']:
             userID = u['employeeId']
             break
-
     if not userID:
         return
     
@@ -223,7 +220,6 @@ def view_manager_request():
             break
     if not employee:
         return
-
     return employee
     pass
 """
