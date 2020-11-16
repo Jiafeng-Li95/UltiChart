@@ -68,10 +68,12 @@ class Chart extends React.Component {
       axios.get('/details/' + this.state.user)
         .then(function (response) {
           let manager = response.data.currentEmployee[0]
-          chartData.push({ id: manager.employeeId, title: manager.firstName + " " + manager.lastName, ParentId: null })
+          chartData.push({ id: manager.employeeId, title: manager.firstName + " " + manager.lastName, ParentId: null, 
+          email: manager.email, Position: manager.positionTitle
+        })
           response.data.directReports.forEach(obj => chartData.push({
             id: obj.employeeID, title: obj.firstName +
-              " " + obj.lastName, ParentId: obj.managerID
+              " " + obj.lastName, ParentId: obj.managerID, email: obj.email, Position: obj.positionTitle
           }))
         })
         .catch(function (error) {

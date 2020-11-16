@@ -252,8 +252,9 @@ class NodeBox extends Component {
                     <Modal.Body>
                        <Form>
                            <Form.Group><Form.Label>Name : {node.title}</Form.Label></Form.Group>
-                           <Form.Group><Form.Label>Employee Id : {node.id}</Form.Label></Form.Group>
-                           <Form.Group><Form.Label>Manager Id : {node.ParentId}</Form.Label></Form.Group>
+                           <Form.Group><Form.Label>Employee ID : {node.id}</Form.Label></Form.Group>
+                           <Form.Group><Form.Label>Email : {node.email}</Form.Label></Form.Group>
+                           <Form.Group><Form.Label>Position : {node.Position}</Form.Label></Form.Group>
                            {/* <Form.Group><Form.Label>Name : {node.title}</Form.Label></Form.Group> */}
                         
                        </Form>

@@ -7,6 +7,7 @@ import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Card from 'react-bootstrap/Card'
 import CardDeck from 'react-bootstrap/CardDeck'
+import axios from 'axios';
 import decode from 'jwt-decode'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { Layout, Menu } from 'antd';
@@ -46,20 +47,7 @@ const ManageRequests = () => (
   </OverlayTrigger>
 );
 
-const namesList = [
-  {
-    id: 1,
-    value: 'John Doe'
-  }, {
-    id: 2,
-    value: 'John Smith'
-  }, {
-    id: 3,
-    value: 'Jane Marie'
-  }, {
-    id: 4,
-    value: 'Jane Thomas'
-  }
+let namesList = [
 ];
 
 // generage select dropdown option list dynamically
@@ -116,7 +104,25 @@ class Requests extends React.Component {
     const token = localStorage.getItem('atoken')
     let decoded = decode(token)
     this.setState({ email: decoded.identity })
+    let id = 1
+
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.email !== this.state.email) {
+      axios.get('/details/' + this.state.email)
+      .then(function (response) {
+        response.data.directReports.forEach(obj => namesList.push({
+          id: obj.employeeID, value: obj.firstName +
+            " " + obj.lastName
+        }))
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+  }
+
   render() {
     return (
       /* Careful : */
@@ -192,10 +198,7 @@ class Requests extends React.Component {
                         <Form.Label>Or Enter Employee Name</Form.Label>
                         <Row>
                           <Col>
-                            <Form.Control placeholder="First name" />
-                          </Col>
-                          <Col>
-                            <Form.Control placeholder="Last name" />
+                            <Form.Control placeholder="Name" />
                           </Col>
                         </Row>
                       </Form>
