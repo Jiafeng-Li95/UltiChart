@@ -15,6 +15,8 @@ collection = db["Tiger_Microsystems-employees"]
 
 app = Flask(__name__)
 
+collection.create_index([("$**", "text")]) # Create wildcard index for all string fields (to make search searchable by all string fields)
+
 # Should load all the data into Postman.
 @app.route("/employees", methods=["GET"])
 def get_all_employees():
@@ -101,14 +103,14 @@ def complete_search():
         # Return error 400.
         return render_template('error.html'), 400"""
 
-
+# Searchable by firstName and lastName
 @app.route("/search/<search_text>", methods=["GET"])
 def complete_search(search_text):
     result = []
     # check available indices
-    matched_emps = collection.find({"$text": {"$search": "search_text"}}) # Finds first occurrence of matched text (value)
+    matched_emps = collection.find({"$text": {"$search": search_text}}, {"score": {"$meta": "textScore"}})
     for employee in matched_emps:
-        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
 
     return jsonify({"matched_employees": result}), 200
 
