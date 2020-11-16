@@ -13,7 +13,9 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import { Layout, Menu } from 'antd';
 import {
   HomeOutlined,
-  PullRequestOutlined, LogoutOutlined
+  PullRequestOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined, LogoutOutlined, EditOutlined
 } from '@ant-design/icons';
 import '../App.css';
 import logo from '../images/Ultimate_Software_logo.svg.png';
@@ -155,6 +157,27 @@ class Requests extends React.Component {
               icon={<PullRequestOutlined />}>
               <a href="/requests"></a>
               Requests
+        </Menu.Item>
+        <Menu.Item
+              key="3"
+              icon={<PlusCircleOutlined />}
+              onClick={this.onHirePopup}
+            >
+              Hire Employee
+        </Menu.Item>
+            <Menu.Item
+              key="4"
+              icon={<MinusCircleOutlined />}
+              onClick={this.onRemovePopup}
+            >
+              Remove Employee
+        </Menu.Item>
+            <Menu.Item
+              key="5"
+              icon={<EditOutlined />}
+              onClick={this.onUpdatePopup}
+            >
+              Update Employee
         </Menu.Item>
             <Menu.Item
               style={{ marginTop: 50 }}
