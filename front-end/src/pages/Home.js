@@ -1,7 +1,7 @@
 import React from 'react';
 import '../App.css';
 import axios from 'axios';
-import { Input, Layout, Menu } from 'antd';
+import { Input, Layout, Menu, Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import logo from '../images/Ultimate_Software_logo.svg.png';
 import Chart from '../components/Chart.js';
@@ -13,9 +13,11 @@ import {
   MinusCircleOutlined, LogoutOutlined
 } from '@ant-design/icons';
 import { Modal, Button } from 'react-bootstrap';
-// import Form from 'react-jsonschema-form';
-import {Theme as AntDTheme} from '@rjsf/antd';
-import {withTheme} from '@rjsf/core';
+import { Theme as AntDTheme } from '@rjsf/antd';
+import { withTheme } from '@rjsf/core';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+
 
 const Form = withTheme(AntDTheme);
 const { Search } = Input;
@@ -30,11 +32,16 @@ class Home extends React.Component {
       isManager: true,
       companyId: "",
       companyName: "",
-      managerId:"",
-      showHireModalPupup: false,
+      managerId: "",
+      removeEmail: "",
+      showHireModalPopup: false,
+      showRemoveModalPopup: false,
+      showNotManagerPopup: false,
     };
     this.onHirePopup = this.onHirePopup.bind(this);
     this.sendHireData = this.sendHireData.bind(this);
+    this.onRemovePopup = this.onRemovePopup.bind(this);
+    this.sendRemoveData = this.sendRemoveData.bind(this);
   }
 
   componentDidMount() {
@@ -52,40 +59,73 @@ class Home extends React.Component {
           this.setState({ companyName: result.data[0].companyName })
         }
       )
+
   }
 
   sendHireData = ((data) => {
-    // axios.post('/hire', data)
-    //   .then((result) => {
-    //       console.log(result);
-    //     })
+    axios.post('/hire', data)
+      .then((result) => {
+          console.log(result);
+        })
     console.log(JSON.stringify(data));
   })
 
   onHirePopup() {
-    this.setState({ showHireModalPupup: true });
+    this.setState({ showHireModalPopup: true });
     axios.get('/details/' + this.state.email)
       .then((response) => {
         //check the user is a manager or not
         if (response.data.directReports.length === 0) {
-          this.setState({ isManager: !this.state.isManager });
+          this.setState({ isManager: false });
         }
-        this.setState({ managerId : response.data.currentEmployee[0].employeeId});
+        this.setState({ managerId: response.data.currentEmployee[0].employeeId });
       })
       .catch(function (error) {
         console.log(error);
       });
   }
 
-  
+  sendRemoveData=((email)=>{
+    axios.delete('/remove/'+email)
+      .then((result) => {
+          console.log(result);
+        })
+    console.log(email);
+  })
+
+  onRemovePopup() {
+    axios.get('/details/' + this.state.email)
+      .then((response) => {
+        //check the user is a manager or not
+        if (response.data.directReports.length === 0) {
+          this.setState({ isManager: false });
+          this.setState({ showRemoveModalPopup: false });
+          this.setState({ showNotManagerPopup : true});
+        }
+        else {
+          this.setState({ showRemoveModalPopup: true });
+          //make the direct report list to nodes
+          this.setState({ nodes: [] });
+          let chartData = [];
+          response.data.directReports.forEach(object => chartData.push({ value: object.email, label: object.email }))
+          this.setState({ nodes: chartData });
+        }
+        this.setState({ managerId: response.data.currentEmployee[0].employeeId });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+  }
 
   render() {
+
     const schema = {
       type: 'object',
-      required: ['firstName','lastName','companyId','password',
-                 'positionTitle','companyName','employeeId',
-                 'managerId','email','startDate','isManager'
-                ],
+      required: ['firstName', 'lastName', 'companyId', 'password',
+        'positionTitle', 'companyName', 'employeeId',
+        'managerId', 'email', 'startDate', 'isManager'
+      ],
       properties: {
         firstName: {
           title: 'First Name',
@@ -98,7 +138,7 @@ class Home extends React.Component {
         companyId: {
           title: 'company Id',
           type: 'integer',
-          enum:[this.state.companyId]
+          enum: [this.state.companyId]
         },
         password: {
           title: 'password',
@@ -107,8 +147,8 @@ class Home extends React.Component {
         positionTitle: {
           title: 'position title',
           type: 'string',
-          enum:["Engineering Manager","Senior Software Engineer","Software Engineer I","Software Architect",
-                "Software Engineer II","Tech Lead",],
+          enum: ["Engineering Manager", "Senior Software Engineer", "Software Engineer I", "Software Architect",
+            "Software Engineer II", "Tech Lead",],
         },
         companyName: {
           title: 'company name',
@@ -118,7 +158,7 @@ class Home extends React.Component {
         isManager: {
           title: 'isManager',
           type: 'string',
-          enum:["true","false"],
+          enum: ["true", "false"],
         },
         employeeId: {
           title: 'employeeId',
@@ -128,7 +168,7 @@ class Home extends React.Component {
         managerId: {
           title: 'managerId',
           type: 'integer',
-          enum:[this.state.managerId]
+          enum: [this.state.managerId]
         },
         email: {
           title: 'email',
@@ -153,11 +193,11 @@ class Home extends React.Component {
         }
       },
       startDate: {
-        "ui:widget":"alt-date",
+        "ui:widget": "alt-date",
         "ui:options": {
-          yearsRange:[1990,2020],
-          hideNowButton:true,
-          hideClearButton:true,
+          yearsRange: [1990, 2020],
+          hideNowButton: true,
+          hideClearButton: true,
         }
       }
     }
@@ -203,6 +243,7 @@ class Home extends React.Component {
             <Menu.Item
               key="4"
               icon={<MinusCircleOutlined />}
+              onClick={this.onRemovePopup}
             >
               Remove Employee
         </Menu.Item>
@@ -229,14 +270,18 @@ class Home extends React.Component {
                 transform: 'translate(-50%, -50%)'
               }}
             />
+
           </Header>
           <Content style={{ margin: '50px 20px 50px', overflow: 'initial' }}>
             <div className="site-layout-background" style={{ padding: 10, textAlign: 'center', minHeight: 500 }}>
+
+              {/* org Chart */}
               <Chart />
+
               {/* hire employee */}
               <Modal
-                show={this.state.showHireModalPupup}
-                onHide={()=>this.setState({showHireModalPupup:false})}
+                show={this.state.showHireModalPopup}
+                onHide={() => this.setState({ showHireModalPopup: false })}
                 centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Hire Employee</Modal.Title>
@@ -245,12 +290,62 @@ class Home extends React.Component {
                   <Form
                     schema={schema}
                     uiSchema={uiSchema}
-                    onSubmit={({ formData }) => {this.sendHireData(formData);this.setState({showHireModalPupup:false})}}
+                    onSubmit={({ formData }) => {
+                      this.sendHireData(formData);
+                      this.setState({ showHireModalPopup: false });
+                      window.location.reload(false);
+                    }}
                   /></Modal.Body>
-                {/* <Modal.Footer>
-                  <Button onClick={()=>this.setState({showHireModalPupup:false})}>close</Button>
-                </Modal.Footer> */}
               </Modal>
+
+              {/* Remove employee Modal*/}
+              <Modal
+                show={this.state.showRemoveModalPopup}
+                onHide={() => this.setState({ showRemoveModalPopup: false })}
+                centered>
+                <Modal.Header closeButton>
+                  <Modal.Title>Remove Employee</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <br/>
+                  <Row justify="space-around" align="middle">
+                    <Col span="100"><Dropdown
+                      options={this.state.nodes}
+                      onChange={(value) => this.setState({ removeEmail: value })}
+                      placeholder="Select an email from your direct reports" /></Col>
+                    <Col>
+                      <Button 
+                        onClick={() => {this.sendRemoveData(this.state.removeEmail.value);
+                                        this.setState({showRemoveModalPopup:false});
+                                        window.location.reload(false);}}
+                        >Submit</Button></Col>
+                  </Row>
+                  <br/>
+                  <br/>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button onClick={() => {
+                    this.setState({ showRemoveModalPopup: false })
+                  }}>close</Button>
+                </Modal.Footer>
+              </Modal>
+
+              {/* Not Manager Error Modal */}
+              <Modal
+                show={this.state.showNotManagerPopup}
+                onHide={() => {this.setState({ showNotManagerPopup: false })}}
+                centered>
+                <Modal.Header closeButton>
+                  <Modal.Title>Not a manager</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>You're not a manager, you can not modify the information of your directReports</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button onClick={() => {this.setState({ showNotManagerPopup: false })}}>close</Button>
+                </Modal.Footer>
+              </Modal>
+
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>Organization Chart ©2020 Created by Covid Coder Team</Footer>
