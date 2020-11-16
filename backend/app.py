@@ -83,10 +83,10 @@ def complete_search():
         field_name = field_value_as_list[0][0] # Gets field name you want to search by
         search_text = field_value_as_list[0][1] # Gets value of field name
         # drop index if it exists 
-        collection.drop_index(field_name)
+        #collection.drop_index(field_name)
         collection.create_index([('field_name', 'text')])
 
-        # matched_emps = collection.find({"$text": {"$search": search_text}})
+        # matched_emps = collection.find({$text: {"$search": search_text}})
         matched_emp = collection.find_one({"$text": {"$search": search_text}}) # Finds first occurrence of matched text (value)
 
         for employee in matched_emps:
@@ -105,12 +105,12 @@ def complete_search():
 @app.route("/search/<search_text>", methods=["GET"])
 def complete_search(search_text):
     result = []
-    matched_emps = collection.find({"$text": {"$search": search_text}}) # Finds first occurrence of matched text (value)
+    # check available indices
+    matched_emps = collection.find({"$text": {"$search": "search_text"}}) # Finds first occurrence of matched text (value)
     for employee in matched_emps:
         result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
 
     return jsonify({"matched_employees": result}), 200
-
 
 
 
