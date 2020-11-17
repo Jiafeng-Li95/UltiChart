@@ -182,8 +182,9 @@ class Requests extends React.Component {
             <Menu.Item
               style={{ marginTop: 50 }}
               key="3"
-              icon={<LogoutOutlined />}>
-              <a href="/login"></a>
+              icon={<LogoutOutlined />}
+              onClick = {()=>{localStorage.removeItem("atoken")
+              window.location.replace("/login");}}>
               Logout
         </Menu.Item>
           </Menu>
