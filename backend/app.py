@@ -128,22 +128,15 @@ def send_manager_request():
         # Return error 400.
         return render_template('error.html'), 400
 # Find a request given to the logged in user.
-@app.route("/viewManagerRequest", methods=["GET"])
+@app.route("/viewRecievedManagerRequest", methods=["GET"])
 @jwt_required
 def view_manager_request():
     rcollection = db["Requests"]
 
-    userID = None
-    for u in collection['email']:
-        if get_jwt_identity() == u['email']:
-            userID = u['employeeId']
-            break
-
-    if not userID:
-        return
     
     request = db.requests.find_one({'newManager': userID})
     employee = None
+    
     for e in collection['employeeId']:
         if request['employeeId'] == e['employeeId']:
             employee = e
@@ -151,5 +144,40 @@ def view_manager_request():
     if not employee:
         return
 
-    return employee
+
+    direct_reports = []
+    current_emp = collection.find_one({"email": get_jwt_identity()})
+    all_requests = db.requests.find({"newManager": current_emp["employeeId"]})
+
+    for requests in all_requests:
+        direct_reports.append({"Employee ID": requests["employeeId"], "Old Manager": requests["oldManager"], "New Manager": requests["newManager"], "Status": requests["status"]})
+    
+    return jsonify({"employeeId": current_emp["employeeId"], "Requests": direct_reports})
+    pass
+#Find a request given by the logged in user.
+@app.route("/viewSentManagerRequest", methods=["GET"])
+@jwt_required
+def view_manager_request():
+    rcollection = db["Requests"]
+
+    
+    request = db.requests.find_one({'newManager': userID})
+    employee = None
+    
+    for e in collection['employeeId']:
+        if request['employeeId'] == e['employeeId']:
+            employee = e
+            break
+    if not employee:
+        return
+
+
+    direct_reports = []
+    current_emp = collection.find_one({"email": get_jwt_identity()})
+    all_requests = db.requests.find({"oldManager": current_emp["employeeId"]})
+
+    for requests in all_requests:
+        direct_reports.append({"Employee ID": requests["employeeId"], "Old Manager": requests["oldManager"], "New Manager": requests["newManager"], "Status": requests["status"]})
+    
+    return jsonify({"employeeId": current_emp["employeeId"], "Requests": direct_reports})
     pass
