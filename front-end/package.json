@@ -37,6 +37,7 @@
     "react-responsive-pinch-zoom-pan": "^0.3.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
+    "react-select-search": "^2.2.1",
     "react-zoom-pan": "^0.1.48",
     "react-zoom-pan-pinch": "^1.6.1"
   },

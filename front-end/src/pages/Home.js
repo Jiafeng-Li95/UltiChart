@@ -17,7 +17,7 @@ import { Theme as AntDTheme } from '@rjsf/antd';
 import { withTheme } from '@rjsf/core';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-
+import { AutoComplete } from 'antd';
 
 const Form = withTheme(AntDTheme);
 const { Search } = Input;
@@ -28,6 +28,7 @@ class Home extends React.Component {
     super(props);
     this.state = {
       nodes: [],
+      nameList: [],
       email: "",
       isManager: true,
       companyId: "",
@@ -38,6 +39,7 @@ class Home extends React.Component {
       showRemoveModalPopup: false,
       showNotManagerPopup: false,
       showUpdateModalPopup: false,
+      searchBarValue: "",
     };
     this.onHirePopup = this.onHirePopup.bind(this);
     this.sendHireData = this.sendHireData.bind(this);
@@ -56,11 +58,18 @@ class Home extends React.Component {
           const nodes = result.data;
           this.setState({ nodes: nodes });
           //store CompanyID
-          this.setState({ companyId: result.data[0].companyId })
+          this.setState({ companyId: result.data[0].companyId });
           //store CompanyName
-          this.setState({ companyName: result.data[0].companyName })
-        }
-      )
+          this.setState({ companyName: result.data[0].companyName });
+          //store the name list for the search bar
+          let chartData = [];
+          nodes.forEach(object => chartData.push({ value: object.firstName + " " + object.lastName }));
+          this.setState({ nameList: chartData });
+          //console.log(this.state.nameList);
+        })
+      .catch(function (error) {
+        console.log(error);
+      })
 
   }
 
@@ -69,7 +78,7 @@ class Home extends React.Component {
       .then((result) => {
         console.log(result);
       })
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
   })
 
   onHirePopup() {
@@ -120,7 +129,7 @@ class Home extends React.Component {
 
   }
 
-  onUpdatePopup(){
+  onUpdatePopup() {
     this.setState({ showUpdateModalPopup: true });
     axios.get('/details/' + this.state.email)
       .then((response) => {
@@ -282,18 +291,34 @@ class Home extends React.Component {
         </Sider>
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
           <Header >
-            <Search
-              placeholder="Search by name"
-              onSearch={onSearch}
-              enterButton
-              size="large"
-              allowClear
+            <AutoComplete
+              options={this.state.nameList}
+              onSelect={(value) => this.setState({ searchBarValue: value })}
+
               style={{
                 width: 500,
                 position: 'absolute', left: '55%', top: '4%',
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
               }}
-            />
+              filterOption={(inputValue, option) =>
+                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+            >
+              <Input.Search size="large" enterButton placeholder="Search by Name"
+                onSearch={() => {
+                  if (this.state.searchBarValue === "") {
+                    console.log("empty string");
+                  }
+                  else {
+
+                    //add search handling even(api calls)
+
+                    (console.log(this.state.searchBarValue));
+                  }
+                }}
+              />
+
+            </AutoComplete>
 
           </Header>
           <Content style={{ margin: '50px 20px 50px', overflow: 'initial' }}>
@@ -305,7 +330,7 @@ class Home extends React.Component {
               {/* hire employee */}
               <Modal
                 show={this.state.showHireModalPopup}
-                onHide={() => {this.setState({ showHireModalPopup: false });window.location.reload(false);}}
+                onHide={() => { this.setState({ showHireModalPopup: false }); window.location.reload(false); }}
                 centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Hire Employee</Modal.Title>
@@ -325,7 +350,7 @@ class Home extends React.Component {
               {/* Remove employee Modal*/}
               <Modal
                 show={this.state.showRemoveModalPopup}
-                onHide={() => {this.setState({ showRemoveModalPopup: false });window.location.reload(false);}}
+                onHide={() => { this.setState({ showRemoveModalPopup: false }); window.location.reload(false); }}
                 centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Remove Employee</Modal.Title>
@@ -359,7 +384,7 @@ class Home extends React.Component {
               {/* Not Manager Error Modal */}
               <Modal
                 show={this.state.showNotManagerPopup}
-                onHide={() => { this.setState({ showNotManagerPopup: false }) ;window.location.reload(false);}}
+                onHide={() => { this.setState({ showNotManagerPopup: false }); window.location.reload(false); }}
                 centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Not a manager</Modal.Title>
@@ -368,14 +393,14 @@ class Home extends React.Component {
                   <p>You're not a manager, you can not modify the information of your directReports</p>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button onClick={() => { this.setState({ showNotManagerPopup: false });window.location.reload(false); }}>close</Button>
+                  <Button onClick={() => { this.setState({ showNotManagerPopup: false }); window.location.reload(false); }}>close</Button>
                 </Modal.Footer>
               </Modal>
 
               {/* Update employee */}
               <Modal
                 show={this.state.showUpdateModalPopup}
-                onHide={() => {this.setState({ showUpdateModalPopup: false });window.location.reload(false);}}
+                onHide={() => { this.setState({ showUpdateModalPopup: false }); window.location.reload(false); }}
                 centered>
                 <Modal.Header closeButton>
                   <Modal.Title>Update Employee</Modal.Title>

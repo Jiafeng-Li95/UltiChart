@@ -81,7 +81,7 @@ class Chart extends React.Component {
         });
       this.setState({ data: chartData })
     }
-    console.log(this.state.data);
+    //console.log(this.state.data);
   }
 
   render() {
