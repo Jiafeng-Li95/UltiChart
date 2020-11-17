@@ -130,7 +130,7 @@ def send_manager_request():
 # Find a request given to the logged in user.
 @app.route("/viewRecievedManagerRequest", methods=["GET"])
 @jwt_required
-def view_manager_request():
+def view_recievedmanager_request():
     rcollection = db["Requests"]
 
     
@@ -157,7 +157,7 @@ def view_manager_request():
 #Find a request given by the logged in user.
 @app.route("/viewSentManagerRequest", methods=["GET"])
 @jwt_required
-def view_manager_request():
+def view_sentmanager_request():
     rcollection = db["Requests"]
 
     
