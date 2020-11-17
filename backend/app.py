@@ -94,13 +94,12 @@ def get_json_employees():
 # Given ObjectId, update employee object
 @app.route("/update", methods=["PUT"])
 def update_employee():
-    all_employees = list(collection.find({}))
     if request.is_json:
         # Get the data that is being added.
-        employee = request.get_json()
-        # Updates passed in employee object in database, given the ObjectId.
-        collection.update({'_id': employee["_id"]["$oid"]}, employee)
-        return "employee " + str(employee["employeeId"]["$numberInt"]) + "'s information has been updated", 200
+        post = request.get_json()
+        # Updates passed in employee object in database, given the employeeId
+        collection.find_one_and_update({"employeeId": post["employeeId"]}, {"$set": post})
+        return "employee " + str(post["employeeId"]) + "'s information has been updated", 200
         # The user did not enter json format.
     else:
         # The frontend will be notified of the error.
@@ -155,7 +154,6 @@ def login():
 @app.route("/isManager/<email>", methods=["GET"])
 def is_Manager(email):
     current_emp = collection.find_one({"email": email}) #getting the current user object
-
     if current_emp: #if the current user is a valid user
 
         if current_emp["isManager"] == True: #checking if the user is a manager or not
