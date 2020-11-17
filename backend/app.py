@@ -49,11 +49,9 @@ def get_employees(email):
 def complete_search(search_text):
     result = []
     # check available indices
-    matched_emps = collection.find({"$text": {"$search": search_text}}, {"score": {"$meta": "textScore"}})
+    matched_emps = collection.find({"email":{"$regex":search_text, '$options' : 'i'}})
     for employee in matched_emps:
         result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
-
-    # TODO: Sort matched_emps by score
 
     return jsonify({"matched_employees": result}), 200
 
@@ -152,9 +150,6 @@ def login():
         return jsonify(message="Login Succeeded!", access_token=access_token), 201
     else:
         return jsonify(message="Bad Email or Password"), 401
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 #route to check if a user is a manager or not 
 @app.route("/isManager/<email>", methods=["GET"])
