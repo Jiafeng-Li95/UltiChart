@@ -40,6 +40,7 @@ class Home extends React.Component {
       showNotManagerPopup: false,
       showUpdateModalPopup: false,
       searchBarValue: "",
+      isManager: false,
     };
     this.onHirePopup = this.onHirePopup.bind(this);
     this.sendHireData = this.sendHireData.bind(this);
@@ -255,8 +256,35 @@ class Home extends React.Component {
             </Menu.Item>
             <Menu.Item
               key="2"
-              icon={<PullRequestOutlined />}>
-              <a href="/requests"></a>
+              icon={<PullRequestOutlined />}
+              onClick={() => {
+                axios.get('/isManager/' + this.state.email)
+                  .then((response) => {
+                    if(response.data ==="isManager"){
+                      this.setState({isManager:true});
+                      console.log("isManager");
+                      console.log(this.state.isManager);
+                      window.location.replace("/requests");
+                    }
+                    else{
+                      this.setState({isManager:false});
+                      console.log("isNotManager");
+                      console.log(this.state.isManager);
+                      window.location.reload("/");
+                      alert("you're not a manager");
+                    }
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+
+                // if (this.state.isManager) {
+                //   window.location.replace("/requests");
+                // }
+                // else {
+                //   window.location.reload("/");
+                // }
+              }}>
               Requests
         </Menu.Item>
             <Menu.Item
