@@ -40,29 +40,16 @@ def get_employees(email):
     
     return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
-""" Alternate input data using JSON for details
-@app.route("/details", methods=["GET"])
-def get_employees():
-    Find employee object with given email and retrieve empID. Get all employees where managerId == empId.
-    Returns empId and direct reports of employee we are looking at.
-    Note: Direct reports are defined as an employee who has the current empId as managerId.
+# Searchable by firstName and lastName
+@app.route("/search/<search_text>", methods=["GET"])
+def complete_search(search_text):
+    result = []
+    # check available indices
+    matched_emps = collection.find({"$text": {"$search": search_text}}, {"score": {"$meta": "textScore"}})
+    for employee in matched_emps:
+        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
 
-    if request.is_json:
-        direct_reports = []
-        email_address = request.get_json()
-        current_emp = collection.find_one({"email": email_address["email"]})
-        all_employees = collection.find({"managerId": current_emp["employeeId"]})
-
-        for employee in all_employees:
-            direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
-        return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports}), 200
-    # The user did not enter json format.
-    else:
-        # The frontend will be notified of the error.
-        flash('data is not in json format')
-        # Return error 400.
-        return render_template('error.html'), 400
-"""
+    return jsonify({"matched_employees": result}), 200
 
 # Get the data from the Mongo Server.
 
@@ -176,6 +163,36 @@ def is_Manager(email):
              return "isNotManager"
     else:
         return "employee not found"
+
+@app.route("/decline/<objectID>", methods=["PUT"])
+def decline_request(objectID):
+    collection2.update({'_id': ObjectId(objectID)},    # Updating status, but not changing any data
+        {
+         '$set': {
+            'status': "decline"
+        }
+    }, upsert=False)
+   
+    return "Done"
+
+@app.route("/accept/<objectID>", methods=["PUT"])
+def accept_request(objectID):
+    current_request = collection2.find_one({"_id": ObjectId(objectID)})  # Need to update the actual database.
+    collection2.update({'_id': ObjectId(objectID)},
+        {
+         '$set': {
+            'status': "accept"
+        }
+    }, upsert=False)
+
+    collection.update({'employeeId': current_request["employeeId"]},
+        {
+         '$set': {
+            'managerId': current_request["newManager"]
+        }
+    }, upsert=False)
+
+    return "Done"
 
 if __name__ == '__main__':
     app.run(debug=True)
