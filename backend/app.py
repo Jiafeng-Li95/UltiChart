@@ -109,8 +109,8 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 # Add json data via Postman to the requests. 
-@app.route("/sendManagerRequest", methods=["POST"])
-def send_manager_request():
+@app.route("/createRequest", methods=["POST"])
+def create_request():
     rcollection = db["Requests"]
     requests = list(rcollection.find({}))
     if request.is_json:
@@ -128,9 +128,9 @@ def send_manager_request():
         # Return error 400.
         return render_template('error.html'), 400
 # Find a request given to the logged in user.
-@app.route("/viewRecievedManagerRequest", methods=["GET"])
+@app.route("/viewRecievedRequests", methods=["GET"])
 @jwt_required
-def view_recievedmanager_request():
+def view_recieved_requests():
     rcollection = db["Requests"]
 
     
@@ -155,9 +155,9 @@ def view_recievedmanager_request():
     return jsonify({"employeeId": current_emp["employeeId"], "Requests": direct_reports})
     pass
 #Find a request given by the logged in user.
-@app.route("/viewSentManagerRequest", methods=["GET"])
+@app.route("/viewSentRequests", methods=["GET"])
 @jwt_required
-def view_sentmanager_request():
+def view_sent_requests():
     rcollection = db["Requests"]
 
     
