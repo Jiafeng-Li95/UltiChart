@@ -5,6 +5,7 @@ import pymongo
 from pymongo import MongoClient
 import json
 from bson import json_util
+from bson.objectid import ObjectId
 # Mac: export FLASK_APP=app.py flask run
 # To keep it in dev mode continuously: export FLASK_APP=app.py FLASK_ENV=development
 
@@ -12,6 +13,9 @@ from bson import json_util
 cluster_320 =  MongoClient("mongodb://cc320:cc320@320-shard-00-00.8rfoj.mongodb.net:27017,320-shard-00-01.8rfoj.mongodb.net:27017,320-shard-00-02.8rfoj.mongodb.net:27017/320?ssl=true&replicaSet=atlas-mkdts8-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = cluster_320["Employees"]
 collection = db["Tiger_Microsystems-employees"]
+
+db2 = cluster_320["Employees"]
+collection2 = db2["Requests"]
 
 app = Flask(__name__)
 
@@ -41,27 +45,16 @@ def get_employees(email):
     
     return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
-""" Alternate input data using JSON for details
-@app.route("/details", methods=["GET"])
-def get_employees():
-    Find employee object with given email and retrieve empID. Get all employees where managerId == empId.
-    Returns empId and direct reports of employee we are looking at.
-    Note: Direct reports are defined as an employee who has the current empId as managerId.
-    if request.is_json:
-        direct_reports = []
-        email_address = request.get_json()
-        current_emp = collection.find_one({"email": email_address["email"]})
-        all_employees = collection.find({"managerId": current_emp["employeeId"]})
-        for employee in all_employees:
-            direct_reports.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
-        return jsonify({"employeeId": current_emp["employeeId"], "directReports": direct_reports}), 200
-    # The user did not enter json format.
-    else:
-        # The frontend will be notified of the error.
-        flash('data is not in json format')
-        # Return error 400.
-        return render_template('error.html'), 400
-"""
+# Searchable by firstName and lastName
+@app.route("/search/<search_text>", methods=["GET"])
+def complete_search(search_text):
+    result = []
+    # check available indices
+    matched_emps = collection.find({"email":{"$regex":search_text, '$options' : 'i'}})
+    for employee in matched_emps:
+        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+
+    return jsonify({"matched_employees": result}), 200
 
 # Get the data from the Mongo Server.
 
@@ -102,13 +95,12 @@ def get_json_employees():
 # Given ObjectId, update employee object
 @app.route("/update", methods=["PUT"])
 def update_employee():
-    all_employees = list(collection.find({}))
     if request.is_json:
         # Get the data that is being added.
-        employee = request.get_json()
-        # Updates passed in employee object in database, given the ObjectId.
-        collection.update({'_id': employee["_id"]["$oid"]}, employee)
-        return "employee " + str(employee["employeeId"]["$numberInt"]) + "'s information has been updated", 200
+        post = request.get_json()
+        # Updates passed in employee object in database, given the employeeId
+        collection.find_one_and_update({"employeeId": post["employeeId"]}, {"$set": post})
+        return "employee " + str(post["employeeId"]) + "'s information has been updated", 200
         # The user did not enter json format.
     else:
         # The frontend will be notified of the error.
@@ -159,14 +151,10 @@ def login():
     else:
         return jsonify(message="Bad Email or Password"), 401
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 #route to check if a user is a manager or not 
 @app.route("/isManager/<email>", methods=["GET"])
 def is_Manager(email):
     current_emp = collection.find_one({"email": email}) #getting the current user object
-
     if current_emp: #if the current user is a valid user
 
         if current_emp["isManager"] == True: #checking if the user is a manager or not
@@ -175,6 +163,36 @@ def is_Manager(email):
              return "isNotManager"
     else:
         return "employee not found"
+
+@app.route("/decline/<objectID>", methods=["PUT"])
+def decline_request(objectID):
+    collection2.update({'_id': ObjectId(objectID)},    # Updating status, but not changing any data
+        {
+         '$set': {
+            'status': "decline"
+        }
+    }, upsert=False)
+   
+    return "Done"
+
+@app.route("/accept/<objectID>", methods=["PUT"])
+def accept_request(objectID):
+    current_request = collection2.find_one({"_id": ObjectId(objectID)})  # Need to update the actual database.
+    collection2.update({'_id': ObjectId(objectID)},
+        {
+         '$set': {
+            'status': "accept"
+        }
+    }, upsert=False)
+
+    collection.update({'employeeId': current_request["employeeId"]},
+        {
+         '$set': {
+            'managerId': current_request["newManager"]
+        }
+    }, upsert=False)
+
+    return "Done"
 
 if __name__ == '__main__':
     app.run(debug=True)
