@@ -284,6 +284,31 @@ div.org-chart-container, div.org-chart-container div, div.org-chart-container ta
     }
 }
 
+.search{
+    padding-top:12px;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.listitem {
+    z-index: 10000;
+    width: 50%;
+    margin: 0 auto;
+    height: 50%;
+    
+}
+
+.list{
+    max-height: 300px;
+    overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+    display: none;  /* Safari and Chrome */
+    z-index:100000;
+    width: 50%;
+    margin: 0 auto;
+}
+
 .logo-design {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -302,3 +327,4 @@ div.org-chart-container, div.org-chart-container div, div.org-chart-container ta
   .site-layout .site-layout-background {
     background: #fff;
   }
+

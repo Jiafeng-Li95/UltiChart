@@ -42,9 +42,8 @@ class Chart extends React.Component {
   }
 
   componentDidMount() {
-    const token = localStorage.getItem('atoken')
-    let decoded = decode(token)
-    this.setState({ user: decoded.identity })
+    const root = localStorage.getItem('curRoot')
+    this.setState({ user: root })
   }
 
   compareState(prev) {
@@ -75,11 +74,11 @@ class Chart extends React.Component {
             id: obj.employeeID, title: obj.firstName +
               " " + obj.lastName, ParentId: obj.managerID, email: obj.email, Position: obj.positionTitle
           }))
-        })
+          this.setState({data: chartData})
+        }.bind(this))
         .catch(function (error) {
           console.log(error);
         });
-      this.setState({ data: chartData })
     }
     //console.log(this.state.data);
   }

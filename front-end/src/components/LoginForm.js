@@ -27,6 +27,7 @@ class LoginForm extends React.Component{
 
 
     handleSubmit(event){
+        localStorage.setItem("curRoot", this.state.email)
         axios.post('/login', {
             email: this.state.email,
             password: this.state.password

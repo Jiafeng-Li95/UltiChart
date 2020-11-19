@@ -5,6 +5,7 @@ import { Input, Layout, Menu, Row, Col } from 'antd';
 import 'antd/dist/antd.css';
 import logo from '../images/Ultimate_Software_logo.svg.png';
 import Chart from '../components/Chart/Chart.js';
+import SearchForm from '../components/Chart/SearchForm.js';
 import decode from 'jwt-decode';
 import {
   HomeOutlined,
@@ -17,6 +18,7 @@ import { Theme as AntDTheme } from '@rjsf/antd';
 import { withTheme } from '@rjsf/core';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+
 import { AutoComplete } from 'antd';
 
 const Form = withTheme(AntDTheme);
@@ -66,12 +68,15 @@ class Home extends React.Component {
           let chartData = [];
           nodes.forEach(object => chartData.push({ value: object.firstName + " " + object.lastName }));
           this.setState({ nameList: chartData });
-          //console.log(this.state.nameList);
+          //console.log(this.state.nameList);*/
         })
       .catch(function (error) {
         console.log(error);
       })
+  }
 
+  componentDidUpdate(prevProps, prevState) {
+        console.log(this.state.searchBarValue)
   }
 
   sendHireData = ((data) => {
@@ -231,6 +236,8 @@ class Home extends React.Component {
 
     const onSearch = value => console.log(value);
 
+    
+
     return (
       <Layout>
         <Sider
@@ -322,7 +329,8 @@ class Home extends React.Component {
         </Sider>
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
           <Header >
-            <AutoComplete
+          <SearchForm/>
+            {/*<AutoComplete
               options={this.state.nameList}
               onSelect={(value) => this.setState({ searchBarValue: value })}
 
@@ -330,11 +338,11 @@ class Home extends React.Component {
                 width: 500,
                 position: 'absolute', left: '55%', top: '4%',
                 transform: 'translate(-50%, -50%)',
-              }}
+              }}>
               filterOption={(inputValue, option) =>
                 option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
               }
-            >
+            
               <Input.Search size="large" enterButton placeholder="Search by Name"
                 onSearch={() => {
                   if (this.state.searchBarValue === "") {
@@ -349,7 +357,7 @@ class Home extends React.Component {
                 }}
               />
 
-            </AutoComplete>
+              </AutoComplete>*/}
 
           </Header>
           <Content style={{ margin: '50px 20px 50px', overflow: 'initial' }}>
