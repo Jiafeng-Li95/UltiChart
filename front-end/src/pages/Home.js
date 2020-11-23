@@ -18,7 +18,6 @@ import { Theme as AntDTheme } from '@rjsf/antd';
 import { withTheme } from '@rjsf/core';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import { Alert } from 'antd';
 
 const Form = withTheme(AntDTheme);
 const { Search } = Input;
@@ -28,26 +27,28 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userEmail: "",
       nodes: [],
+      //store user info variable name
       firstName:"",
       lastName:"",
       email:"",
       employeeId:"",
-      userEmail: "",
-      isManager: true,
       companyId: "",
       companyName: "",
       managerId: "",
+      isManager: false,
+      //remove variable name
       removeEmail: "",
-      updateEmail: "",
-      showHireModalPopup: false,
       showRemoveModalPopup: false,
       showNotManagerPopup: false,
+      //hire variable name
+      showHireModalPopup: false,
+      //update variable name
+      updateEmail: "",
       showUpdateModalPopup: false,
       showUpdateSelectErrorPopup: false,
       showUpdateFormPopup: false,
-      searchBarValue: "",
-      isManager: false,
     };
     this.onHirePopup = this.onHirePopup.bind(this);
     this.sendHireData = this.sendHireData.bind(this);
@@ -71,11 +72,6 @@ class Home extends React.Component {
           this.setState({ companyId: result.data[0].companyId });
           //store CompanyName
           this.setState({ companyName: result.data[0].companyName });
-          //store the name list for the search bar
-          let chartData = [];
-          nodes.forEach(object => chartData.push({ value: object.firstName + " " + object.lastName }));
-          this.setState({ nameList: chartData });
-          //console.log(this.state.nameList);*/
         })
       .catch(function (error) {
         console.log(error);
@@ -86,13 +82,14 @@ class Home extends React.Component {
   //   console.log(this.state.searchBarValue)
   // }
 
+  //hire route handler: send data 
   sendHireData = ((data) => {
     axios.post('/hire', data)
       .then((result) => {
         //console.log(result);
       })
   })
-
+  //hire route handler: show popup
   onHirePopup() {
     this.setState({ showHireModalPopup: true });
     axios.get('/details/' + this.state.userEmail)
@@ -107,14 +104,14 @@ class Home extends React.Component {
         console.log(error);
       });
   }
-
+  //remove route handler: send email
   sendRemoveData = ((email) => {
     axios.delete('/remove/' + email)
       .then((result) => {
         //console.log(result);
       })
   })
-
+  //remove route handler: show popup
   onRemovePopup() {
     axios.get('/details/' + this.state.userEmail)
       .then((response) => {
@@ -139,7 +136,7 @@ class Home extends React.Component {
       });
 
   }
-
+  //update route handler: show popup
   onUpdatePopup() {
     //this.setState({ showUpdateModalPopup: true });
     axios.get('/details/' + this.state.userEmail)
@@ -157,7 +154,7 @@ class Home extends React.Component {
         console.log(error);
       });
   }
-
+  //update route handler: using search function and store employee info
   onSubmitUpdateSelect=((updateEmail)=>{
     if (updateEmail === "") {
       this.setState({ showUpdateSelectErrorPopup: true });
@@ -178,7 +175,7 @@ class Home extends React.Component {
       this.setState({ showUpdateModalPopup: false });
     }
   });
-
+  //update route handler: send data
   sendUpdateData = ((data) => {
     axios.put('/update', data)
       .then((result) => {
@@ -394,14 +391,10 @@ class Home extends React.Component {
                   .then((response) => {
                     if (response.data === "isManager") {
                       this.setState({ isManager: true });
-                      console.log("isManager");
-                      console.log(this.state.isManager);
                       window.location.replace("/requests");
                     }
                     else {
                       this.setState({ isManager: false });
-                      console.log("isNotManager");
-                      console.log(this.state.isManager);
                       window.location.reload("/");
                       alert("you're not a manager");
                     }
@@ -409,13 +402,6 @@ class Home extends React.Component {
                   .catch(function (error) {
                     console.log(error);
                   });
-
-                // if (this.state.isManager) {
-                //   window.location.replace("/requests");
-                // }
-                // else {
-                //   window.location.reload("/");
-                // }
               }}>
               Requests
         </Menu.Item>
@@ -457,35 +443,6 @@ class Home extends React.Component {
         <Layout className="site-layout" style={{ marginLeft: 200 }}>
           <Header >
             <SearchForm />
-            {/* <AutoComplete
-              options={this.state.nameList}
-              onSelect={(value) => this.setState({ searchBarValue: value })}
-
-              style={{
-                width: 500,
-                position: 'absolute', left: '55%', top: '4%',
-                transform: 'translate(-50%, -50%)',
-              }}>
-              filterOption={(inputValue, option) =>
-                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-            
-              <Input.Search size="small" enterButton placeholder="Search by Name"
-                onSearch={() => {
-                  if (this.state.searchBarValue === "") {
-                    console.log("empty string");
-                  }
-                  else {
-
-                    //add search handling even(api calls)
-
-                    (console.log(this.state.searchBarValue));
-                  }
-                }}
-              />
-
-              </AutoComplete> */}
-
           </Header>
           <Content style={{ margin: '50px 20px 50px', overflow: 'initial' }}>
             <div className="site-layout-background" style={{ padding: 10, textAlign: 'center', minHeight: 500 }}>
@@ -580,7 +537,7 @@ class Home extends React.Component {
                     <Dropdown
                       options={this.state.nodes}
                       onChange={(value) => this.setState({ updateEmail: value })}
-                      placeholder="Select an email from direct reports" />
+                      placeholder="Select an employee email from your direct reports" />
                   </Row>
                   <br />
                 </Modal.Body>
