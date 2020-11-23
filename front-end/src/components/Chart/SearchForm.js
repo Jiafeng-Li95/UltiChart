@@ -1,54 +1,56 @@
 import React from 'react';
 import axios from 'axios';
-import {Form, ListGroup, InputGroup} from 'react-bootstrap'
+import { Form, ListGroup, InputGroup } from 'react-bootstrap'
 import onClickOutside from 'react-onclickoutside'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
-import '../../App.css'; 
+import '../../App.css';
 
-class SearchForm extends React.Component{
+class SearchForm extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             input: "",
             data: [],
-            input: ""
+            input: "",
+            
         }
         this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(event){
+    handleChange(event) {
         const target = event.target;
         const value = target.value;
         this.setState({
-            input: value });
-        if(value.length ===0){
-            this.setState({data: []})
+            input: value
+        });
+        if (value.length === 0) {
+            this.setState({ data: [] })
         }
-        else{
+        else {
             axios.get('/search/' + value)
-            .then(function (response) {
-                this.setState({data: response.data.matched_employees})
-            }.bind(this))
-            .catch(function (error) {
-                console.log(error)
-            })
+                .then(function (response) {
+                    this.setState({ data: response.data.matched_employees })
+                }.bind(this))
+                .catch(function (error) {
+                    console.log(error)
+                })
         }
     }
 
     handleClickOutside = () => {
-        this.setState({data: []})
-      }
+        this.setState({ data: [] })
+    }
 
-      clickItem(email){
+    clickItem(email) {
 
         localStorage.setItem("curRoot", email)
         window.location.replace("/");
-      }
+    }
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <Form className = "search">
                     <InputGroup>
