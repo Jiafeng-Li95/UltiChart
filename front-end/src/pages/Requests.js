@@ -191,6 +191,7 @@ class Requests extends React.Component {
   }
   //remove route handler: send email
   sendRemoveData = ((email) => {
+    console.log(email);
     axios.delete('/remove/' + email)
       .then((result) => {
         //console.log(result);
@@ -241,6 +242,7 @@ class Requests extends React.Component {
   }
   //update route handler: using search function and store employee info
   onSubmitUpdateSelect = ((updateEmail) => {
+    console.log(updateEmail);
     if (updateEmail === "") {
       this.setState({ showUpdateSelectErrorPopup: true });
     }
@@ -673,14 +675,14 @@ class Requests extends React.Component {
                   <Row justify="space-around" align="middle">
                     <Col span="100"><Dropdown
                       options={this.state.nodes}
-                      onChange={(value) => this.setState({ removeEmail: value })}
+                      onChange={(value) => this.setState({ updateEmail: value })}
                       placeholder="Select an email from your direct reports" /></Col>
                   </Row>
                   <br />
                 </Modal.Body>
                 <Modal.Footer>
                   <Button
-                    onClick={() => this.onSubmitUpdateSelect(this.state.updateEmail)}
+                    onClick={() => {this.onSubmitUpdateSelect(this.state.updateEmail)}}
                   >Submit</Button>
 
                   <Button onClick={() => {
