@@ -46,13 +46,14 @@ def get_employees(email):
     return jsonify({"currentEmployee": current_employee, "directReports": direct_reports})
 
 # Searchable by firstName and lastName
+# password, positionTitle, isManager and startDate
 @app.route("/search/<search_text>", methods=["GET"])
 def complete_search(search_text):
     result = []
     # check available indices
     matched_emps = collection.find({"email":{"$regex":search_text, '$options' : 'i'}})
     for employee in matched_emps:
-        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"]})
+        result.append({"firstName": employee["firstName"], "lastName": employee["lastName"], "email": employee["email"], "employeeID": employee["employeeId"], "managerID": employee["managerId"], "password": employee["password"], "positionTitle": employee["positionTitle"], "isManager": employee["isManager"], "startDate": employee["startDate"]})
 
     return jsonify({"matched_employees": result}), 200
 
@@ -92,7 +93,7 @@ def get_json_employees():
         return render_template('error.html'), 400
 
 # Update employee information
-# Given ObjectId, update employee object
+# Given employeeId, update employee object
 @app.route("/update", methods=["PUT"])
 def update_employee():
     if request.is_json:
@@ -194,50 +195,37 @@ def accept_request(objectID):
 
     return "Done"
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route("/createRequest/<oldManagerEmail>/<newManagerEmail>/<oldManagerID>/<newManagerID>/<employeeID>", methods=["POST"])
+def create_request(oldManagerEmail, newManagerEmail, oldManagerID, newManagerID, employeeID):
+    rcollection = db["Requests"]
 
-"""
-# Add json data via Postman to the requests. 
-@app.route("/sendManagerRequest", methods=["POST"])
-def send_manager_request():
-    rcollection = db["Requests"]
-    requests = list(rcollection.find({}))
-    if request.is_json:
-        # Get the data that is being added.
-        employees = request.get_json()
-        # Append the json data to the database.
-        requests.append(employees)
-        # Inserts to the database.
-        rcollection.insert_one(employees);
-        return {'id': len(requests)}, 200
-    # The user did not enter json format.
-    else:
-        # The frontend will be notified of the error.
-        flash('data is not in json format')
-        # Return error 400.
-        return render_template('error.html'), 400
+    sendRequest = []
+    sendRequest.append({"employeeID": employeeID, "oldManager": oldManagerID, "newManager": newManagerID, "oldManagerEmail": oldManagerEmail, "newManagerEmail": newManagerEmail, "status": "pending"})
+    rcollection.insert_many(sendRequest)
+    return "Done"
+
 # Find a request given to the logged in user.
-@app.route("/viewManagerRequest", methods=["GET"])
-@jwt_required
-def view_manager_request():
-    rcollection = db["Requests"]
-    userID = None
-    for u in collection['email']:
-        if get_jwt_identity() == u['email']:
-            userID = u['employeeId']
-            break
-    if not userID:
-        return
-    
-    request = db.requests.find_one({'newManager': userID})
-    employee = None
-    for e in collection['employeeId']:
-        if request['employeeId'] == e['employeeId']:
-            employee = e
-            break
-    if not employee:
-        return
-    return employee
-    pass
-"""
+@app.route("/viewSentRequests/<email>", methods=["GET"])
+def view_sent_requests(email):
+    rcollection = db["Requests"] 
+    current_emp = collection.find_one({"email": email})  
+
+    targetRequests = [] 
+    all_requests = rcollection.find({"oldManager": current_emp["employeeId"]})
+
+    for requests in all_requests:
+        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
+    return jsonify({"ViewSentRequests": targetRequests})
+
+# Find a request given to the logged in user.
+@app.route("/viewReceivedRequests/<email>", methods=["GET"])
+def view_received_requests(email):
+    rcollection = db["Requests"] 
+    current_emp = collection.find_one({"email": email})  
+
+    targetRequests = [] 
+    all_requests = rcollection.find({"newManager": current_emp["employeeId"]})
+
+    for requests in all_requests:
+        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
+    return jsonify({"ViewRecievedRequests": targetRequests})
