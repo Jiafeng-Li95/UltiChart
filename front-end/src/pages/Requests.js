@@ -564,16 +564,10 @@ class Requests extends React.Component {
                       <br></br>
                       <Form>
                         <br></br>
-                        <Form.Group controlId="exampleForm.ControlTextarea1">
-                          <Form.Label>Place any comments for this employees current manager here</Form.Label>
-                          <Form.Control as="textarea" rows="3" placeholder="additional comments" />
-                        </Form.Group>
+                
                       </Form>
                     </div>
                     <br></br>
-                    <Button variant="outline-secondary" size="lg" block>
-                      Submit
-            </Button>
                   </Col>
                   <Col xs={6} md={5}>
                     <br></br>
