@@ -166,7 +166,9 @@ class Home extends React.Component {
           this.setState({ employeeId: response.data.matched_employees[0].employeeID })
           this.setState({ managerId: response.data.matched_employees[0].managerID })
           this.setState({ firstName: response.data.matched_employees[0].firstName })   
-          this.setState({ lastName: response.data.matched_employees[0].lastName })      
+          this.setState({ lastName: response.data.matched_employees[0].lastName })
+          this.setState({ positionTitle: response.data.matched_employees[0].positionTitle })
+          this.setState({ isManager: response.data.matched_employees[0].isManager })  
         }.bind(this))
         .catch(function (error) {
           console.log(error)
@@ -309,6 +311,7 @@ class Home extends React.Component {
         managerId: {
           title: 'managerId',
           type: 'integer',
+          enum: [this.state.managerId],
         },
         email: {
           title: 'email',
@@ -330,15 +333,15 @@ class Home extends React.Component {
       companyId:{
         "ui:placeholder": this.state.companyId,
       },
-      // positionTitle:{
-      //   "ui:placeholder": this.state.positionTitle,
-      // },
+      positionTitle:{
+        "ui:placeholder": this.state.positionTitle,
+      },
       companyName:{
         "ui:placeholder": this.state.companyName,
       },
-      // isManager:{
-      //   "ui:placeholder": this.state.isManager,
-      // },
+      isManager:{
+        "ui:placeholder": this.state.isManager,
+      },
       managerId:{
         "ui:placeholder": this.state.managerId,
       },
