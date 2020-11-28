@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import {Form, ListGroup, InputGroup} from 'react-bootstrap'
 import onClickOutside from 'react-onclickoutside'
+import decode from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import '../../App.css'; 
@@ -13,7 +14,9 @@ class SearchForm extends React.Component{
         this.state = {
             input: "",
             data: [],
-            input: ""
+            curEmail: "",
+            curID: "",
+            oldManager: false
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -42,11 +45,58 @@ class SearchForm extends React.Component{
         this.setState({data: []})
       }
 
-      clickItem(email){
-
-        localStorage.setItem("curRoot", email)
-        window.location.replace("/");
+      componentDidMount(){
+        const token = localStorage.getItem('atoken')
+        let decoded = decode(token)
+        this.setState({ curEmail: decoded.identity })
+        axios.get('/details/' + decoded.identity)
+        .then(function (response) {
+          let managerId = response.data.currentEmployee[0].employeeId
+          this.setState({curID: managerId})
+          }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+        });
       }
+
+
+
+      async getEmail(newEmail, id, newManagerId, employeeId){
+        let request = () => {console.log("error")}
+        await axios.get('/employees')
+        .then(function (result) {
+            let employees = result.data
+            employees.forEach(emp => {
+              if(id === emp.employeeId){
+                request = () => this.makeRequest(emp.email, newEmail, id, newManagerId, employeeId)
+              } 
+            })
+        }.bind(this))
+        .catch(function (error) {
+            console.log(error);
+        });
+        return request
+    }
+
+      async clickItem(employeeInfo){
+        let oldManagerId = employeeInfo.managerID 
+        let employeeId = employeeInfo.employeeID
+        let newManagerId = this.state.curID
+        let newEmail = this.state.curEmail
+        let request = await this.getEmail(newEmail, oldManagerId, newManagerId, employeeId)  
+        request()
+        }
+
+    async makeRequest(oldEmail, newEmail, oldManagerId, newManagerId, employeeId){
+        axios.post('/createRequest/' + oldEmail + '/' + newEmail + '/' + oldManagerId + '/' + newManagerId + '/' + employeeId)
+        .then(function (response) {
+            alert("Successfully made request!")
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
+    
 
     render(){
         return(
@@ -63,7 +113,7 @@ class SearchForm extends React.Component{
                 </Form>
                 <ListGroup className = "list">
                     {this.state.data.map(obj=>(
-                        <ListGroup.Item action onClick = {() => this.clickItem(obj.email)} className = "listitem py-0">{obj.firstName + " " + obj.lastName}</ListGroup.Item>
+                        <ListGroup.Item type = "button" action onClick = {() =>  this.clickItem(obj)} className = "listitem py-0">{obj.firstName + " " + obj.lastName}</ListGroup.Item>
                     ))}
                 </ListGroup>
             </div>

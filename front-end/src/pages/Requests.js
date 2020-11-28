@@ -53,7 +53,7 @@ const NewRequest = () => (
 
 const ManageRequests = () => (
   <OverlayTrigger trigger="hover" placement="left" overlay={popoverManage}>
-    <h2 className="request-text">Manage Existing Requests</h2>
+    <h2 className="request-text">Manage Incoming Requests</h2>
   </OverlayTrigger>
 );
 
@@ -103,6 +103,7 @@ class Requests extends React.Component {
     super(props);
     this.state = {
       userEmail: "",
+      requests: [],
       nodes: [],
       //store user info variable name
       firstName: "",
@@ -139,6 +140,14 @@ class Requests extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem('atoken')
     let decoded = decode(token)
+    axios.get('/viewReceivedRequests/' + decoded.identity)
+    .then(function (response) {
+      console.log(response)
+      this.setState({requests: response.data.ViewRecievedRequests})
+    }.bind(this))
+    .catch(function (error) {
+      console.log(error);
+    });
     this.setState({ userEmail: decoded.identity })
     let id = 1
     axios.get('/employees')
@@ -529,8 +538,7 @@ class Requests extends React.Component {
                     <br></br>
                     <div>
                       <NewRequest />
-                      <br></br>
-              Select an Employee to Transfer
+
               {/* <Dropdown>
                         <Dropdown.Toggle style={{ width: '19rem' }} variant="secondary" id="dropdown-custom-components">
                           Select an Employee
@@ -538,15 +546,15 @@ class Requests extends React.Component {
                         <Dropdown.Menu as={CustomMenu}>
                           <Options options={namesList} />
                         </Dropdown.Menu>
-                      </Dropdown> */}
+                      </Dropdown> 
                       <Dropdown
                         options={namesList}
                         // onChange={(value) => this.setState({ removeEmail: value })}
-                        placeholder="Select an email from your direct reports" />
+                        placeholder="Select an email from your direct reports" />*/}
 
                       <br></br>
                       <Form>
-                        <Form.Label>Or Search for an Employee to Request</Form.Label>
+                        <Form.Label>Search for an Employee to Request</Form.Label>
                         <Row>
                           <Col>
                             <RequestsSearchForm />
@@ -573,17 +581,21 @@ class Requests extends React.Component {
                     <ManageRequests />
                     <br></br>
                     <CardDeck>
-                      <Card style={{ width: '18rem' }}>
-                        <Card.Body>
+                      
+                      {this.state.requests.map(obj=>(
+                        <Card style={{ width: '18rem' }}>
+                          <Card.Body>
                           <Card.Title>Transfer Request</Card.Title>
-                          <Card.Subtitle className="mb-2 text-muted">Employee Name</Card.Subtitle>
+                      <Card.Subtitle className="mb-2 text-muted">{obj.Status}</Card.Subtitle>
                           <Card.Text>
-                            (Manager Name) has requested your employee, (Employee Name), be transfered to his team.
-                </Card.Text>
+                            {obj.NewManagerEmail} has requested employee ID {obj.EmployeeID} to be transferred to their team.
+                          </Card.Text>
                           <Card.Link href="#">Accept</Card.Link>
                           <Card.Link href="#">Decline</Card.Link>
                         </Card.Body>
                       </Card>
+                      ))}
+                        
                     </CardDeck>
                   </Col>
                 </Row>
