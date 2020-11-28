@@ -395,8 +395,8 @@ class Home extends React.Component {
                     }
                     else {
                       this.setState({ isManager: false });
-                      window.location.reload("/");
-                      alert("you're not a manager");
+                      //window.location.reload("/");
+                      this.setState({ showNotManagerPopup: true });
                     }
                   })
                   .catch(function (error) {
@@ -512,7 +512,9 @@ class Home extends React.Component {
                   <Modal.Title>Not a manager</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <p>You're not a manager, you can not modify the information of your directReports</p>
+                  <p>You're not a manager, you do not have access to this functionality. {
+                    
+                  }</p>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button onClick={() => { this.setState({ showNotManagerPopup: false }); window.location.reload(false); }}>close</Button>

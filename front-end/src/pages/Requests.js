@@ -23,6 +23,8 @@ import { Theme as AntDTheme } from '@rjsf/antd';
 import { withTheme } from '@rjsf/core';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import RequestsSearchForm from '../components/Chart/RequestsSearchForm.js';
+
 
 const Forms = withTheme(AntDTheme);
 const { Header, Sider, Content, Footer } = Layout;
@@ -528,7 +530,7 @@ class Requests extends React.Component {
                     <div>
                       <NewRequest />
                       <br></br>
-              Select an Employee
+              Select an Employee to Transfer
               {/* <Dropdown>
                         <Dropdown.Toggle style={{ width: '19rem' }} variant="secondary" id="dropdown-custom-components">
                           Select an Employee
@@ -537,7 +539,6 @@ class Requests extends React.Component {
                           <Options options={namesList} />
                         </Dropdown.Menu>
                       </Dropdown> */}
-
                       <Dropdown
                         options={namesList}
                         // onChange={(value) => this.setState({ removeEmail: value })}
@@ -545,10 +546,10 @@ class Requests extends React.Component {
 
                       <br></br>
                       <Form>
-                        <Form.Label>Or Enter Employee Name</Form.Label>
+                        <Form.Label>Or Search for an Employee to Request</Form.Label>
                         <Row>
                           <Col>
-                            <Form.Control placeholder="Name" />
+                            <RequestsSearchForm />
                           </Col>
                         </Row>
                       </Form>
