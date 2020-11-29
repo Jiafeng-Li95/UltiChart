@@ -88,7 +88,13 @@ class SearchForm extends React.Component{
         }
 
     async makeRequest(oldEmail, newEmail, oldManagerId, newManagerId, employeeId){
-        axios.post('/createRequest/' + oldEmail + '/' + newEmail + '/' + oldManagerId + '/' + newManagerId + '/' + employeeId)
+        axios.post('/createRequest', {
+            oldManagerEmail: oldEmail,
+            newManagerEmail: newEmail,
+            oldManagerID: oldManagerId,
+            newManagerID: newManagerId,
+            employeeID: employeeId
+        })
         .then(function (response) {
             alert("Successfully made request!")
           })

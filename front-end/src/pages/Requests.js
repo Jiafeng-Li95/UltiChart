@@ -137,10 +137,45 @@ class Requests extends React.Component {
     this.onSubmitUpdateSelect = this.onSubmitUpdateSelect.bind(this);
     this.sendUpdateData = this.sendUpdateData.bind(this);
   }
+
+  acceptRequest(request){
+    axios.put('/accept', {
+      oldManagerEmail: request.OldManagerEmail,
+      newManagerEmail: request.NewManagerEmail,
+      oldManagerID: request.OldManager,
+      newManagerID: request.NewManager,
+      employeeID: request.EmployeeID
+    })
+    .then(function (response) {
+      alert("Request accepted.")
+      window.location.replace("/requests");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  declineRequest(request){
+    axios.put('/decline', {
+      oldManagerEmail: request.OldManagerEmail,
+      newManagerEmail: request.NewManagerEmail,
+      oldManagerID: request.OldManager,
+      newManagerID: request.NewManager,
+      employeeID: request.EmployeeID
+    })
+    .then(function (response) {
+      alert("Request denied.")
+      window.location.replace("/requests");
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
   componentDidMount() {
     const token = localStorage.getItem('atoken')
     let decoded = decode(token)
-    axios.get('/viewReceivedRequests/' + decoded.identity)
+    axios.get('/viewRecievedRequests/' + decoded.identity)
     .then(function (response) {
       console.log(response)
       this.setState({requests: response.data.ViewRecievedRequests})
@@ -455,6 +490,25 @@ class Requests extends React.Component {
       }
     }
 
+    const renderCard = (obj) => {
+      let stat = obj.Status
+      if(stat.localeCompare("pending") === 0){
+        return (<Card style={{ width: '18rem' }}>
+        <Card.Body>
+        <Card.Title>Transfer Request</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">{obj.Status}</Card.Subtitle>
+        <Card.Text>
+          {obj.NewManagerEmail} has requested employee ID {obj.EmployeeID} to be transferred to their team.
+        </Card.Text>
+        <Card.Link action onClick = {() =>  this.acceptRequest(obj)}>Accept</Card.Link>
+        <Card.Link action onClick = {() =>  this.declineRequest(obj)}>Decline</Card.Link>
+      </Card.Body>
+    </Card>)
+      }
+    }
+
+    
+
     return (
       /* Careful : */
       /* navigation bar with the content field (make changes in the content field)*/
@@ -577,17 +631,7 @@ class Requests extends React.Component {
                     <CardDeck>
                       
                       {this.state.requests.map(obj=>(
-                        <Card style={{ width: '18rem' }}>
-                          <Card.Body>
-                          <Card.Title>Transfer Request</Card.Title>
-                      <Card.Subtitle className="mb-2 text-muted">{obj.Status}</Card.Subtitle>
-                          <Card.Text>
-                            {obj.NewManagerEmail} has requested employee ID {obj.EmployeeID} to be transferred to their team.
-                          </Card.Text>
-                          <Card.Link href="#">Accept</Card.Link>
-                          <Card.Link href="#">Decline</Card.Link>
-                        </Card.Body>
-                      </Card>
+                        renderCard(obj)
                       ))}
                         
                     </CardDeck>
