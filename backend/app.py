@@ -243,7 +243,7 @@ def view_recieved_requests(email):
     all_requests = rcollection.find({"newManager": current_emp["employeeId"]})
 
     for requests in all_requests:
-        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
+        targetRequests.append({"EmployeeID": requests["employeeID"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
     return jsonify({"ViewRecievedRequests": targetRequests})
 
 
@@ -257,5 +257,5 @@ def view_sent_requests(email):
     all_requests = rcollection.find({"oldManager": current_emp["employeeId"]})
 
     for requests in all_requests:
-        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
+        targetRequests.append({"EmployeeID": requests["employeeID"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
     return jsonify({"ViewSentRequests": targetRequests})
