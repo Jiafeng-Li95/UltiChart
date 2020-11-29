@@ -165,9 +165,18 @@ def is_Manager(email):
     else:
         return "employee not found"
 
-@app.route("/decline/<objectID>", methods=["PUT"])
-def decline_request(objectID):
-    collection2.update({'_id': ObjectId(objectID)},    # Updating status, but not changing any data
+@app.route("/decline", methods=["PUT"])
+def decline_request():
+    if request.is_json:
+        oldManagerEmail = request.json["oldManagerEmail"]
+        newManagerEmail = request.json["newManagerEmail"]
+        oldManagerID = request.json["oldManagerID"]
+        newManagerID = request.json["newManagerID"]
+        employeeID = request.json["employeeID"]
+    else:
+        return render_template('error.html'), 400
+
+    collection2.update({'oldManagerEmail': oldManagerEmail, 'newManagerEmail': newManagerEmail, 'oldManager': oldManagerID, 'newManager': newManagerID, 'employeeID': employeeID},    # Updating status, but not changing any data
         {
          '$set': {
             'status': "decline"
@@ -176,17 +185,26 @@ def decline_request(objectID):
    
     return "Done"
 
-@app.route("/accept/<objectID>", methods=["PUT"])
-def accept_request(objectID):
-    current_request = collection2.find_one({"_id": ObjectId(objectID)})  # Need to update the actual database.
-    collection2.update({'_id': ObjectId(objectID)},
+@app.route("/accept", methods=["PUT"])
+def accept_request():
+    if request.is_json:
+        oldManagerEmail = request.json["oldManagerEmail"]
+        newManagerEmail = request.json["newManagerEmail"]
+        oldManagerID = request.json["oldManagerID"]
+        newManagerID = request.json["newManagerID"]
+        employeeID = request.json["employeeID"]
+    else:
+        return render_template('error.html'), 400
+
+    current_request = collection2.find_one({'oldManagerEmail': oldManagerEmail, 'newManagerEmail': newManagerEmail, 'oldManager': oldManagerID, 'newManager': newManagerID, 'employeeID': employeeID})
+    collection2.update({'oldManagerEmail': oldManagerEmail, 'newManagerEmail': newManagerEmail, 'oldManager': oldManagerID, 'newManager': newManagerID, 'employeeID': employeeID}, 
         {
          '$set': {
             'status': "accept"
         }
     }, upsert=False)
 
-    collection.update({'employeeId': current_request["employeeId"]},
+    collection.update({'employeeId': current_request["employeeID"]},
         {
          '$set': {
             'managerId': current_request["newManager"]
@@ -195,14 +213,39 @@ def accept_request(objectID):
 
     return "Done"
 
-@app.route("/createRequest/<oldManagerEmail>/<newManagerEmail>/<oldManagerID>/<newManagerID>/<employeeID>", methods=["POST"])
-def create_request(oldManagerEmail, newManagerEmail, oldManagerID, newManagerID, employeeID):
+
+# Add json data via Postman to the requests json data: /<oldManagerEmail>/<newManagerEmail>/<oldManagerID>/<newManagerID>/<employeeID>.
+@app.route("/createRequest", methods=["POST"])
+def create_request():
     rcollection = db["Requests"]
 
+    if request.is_json:
+        oldManagerEmail = request.json["oldManagerEmail"]
+        newManagerEmail = request.json["newManagerEmail"]
+        oldManagerID = request.json["oldManagerID"]
+        newManagerID = request.json["newManagerID"]
+        employeeID = request.json["employeeID"]
+    else:
+        return render_template('error.html'), 400
+        
     sendRequest = []
     sendRequest.append({"employeeID": employeeID, "oldManager": oldManagerID, "newManager": newManagerID, "oldManagerEmail": oldManagerEmail, "newManagerEmail": newManagerEmail, "status": "pending"})
     rcollection.insert_many(sendRequest)
     return "Done"
+
+# Find a request given to the logged in user.
+@app.route("/viewRecievedRequests/<email>", methods=["GET"])
+def view_recieved_requests(email):
+    rcollection = db["Requests"] 
+    current_emp = collection.find_one({"email": email})
+
+    targetRequests = [] 
+    all_requests = rcollection.find({"newManager": current_emp["employeeId"]})
+
+    for requests in all_requests:
+        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
+    return jsonify({"ViewRecievedRequests": targetRequests})
+
 
 # Find a request given to the logged in user.
 @app.route("/viewSentRequests/<email>", methods=["GET"])
@@ -216,16 +259,3 @@ def view_sent_requests(email):
     for requests in all_requests:
         targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
     return jsonify({"ViewSentRequests": targetRequests})
-
-# Find a request given to the logged in user.
-@app.route("/viewReceivedRequests/<email>", methods=["GET"])
-def view_received_requests(email):
-    rcollection = db["Requests"] 
-    current_emp = collection.find_one({"email": email})  
-
-    targetRequests = [] 
-    all_requests = rcollection.find({"newManager": current_emp["employeeId"]})
-
-    for requests in all_requests:
-        targetRequests.append({"EmployeeID": requests["employeeId"], "OldManager": requests["oldManager"], "NewManager": requests["newManager"], "OldManagerEmail": requests["oldManagerEmail"], "NewManagerEmail": requests["newManagerEmail"], "Status": requests["status"]})
-    return jsonify({"ViewRecievedRequests": targetRequests})
