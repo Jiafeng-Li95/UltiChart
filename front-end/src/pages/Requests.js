@@ -175,10 +175,10 @@ class Requests extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem('atoken')
     let decoded = decode(token)
-    axios.get('/viewRecievedRequests/' + decoded.identity)
+    axios.get('/viewSentRequests/' + decoded.identity)
     .then(function (response) {
       console.log(response)
-      this.setState({requests: response.data.ViewRecievedRequests})
+      this.setState({requests: response.data.ViewSentRequests})
     }.bind(this))
     .catch(function (error) {
       console.log(error);
